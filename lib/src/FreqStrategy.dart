@@ -19,7 +19,7 @@ abstract class FreqStrategy {
       this.startTime,
       this.endTime,
       this.ruleType = FreqType.FREQ_UNSUPPORTED}) {
-    getRepeatTypeAndDuration();
+    getRepeatTypeAndInterval();
   }
 
   List<DateTime> getDates(DateTime until);
@@ -28,7 +28,7 @@ abstract class FreqStrategy {
 
   FreqType getRuleType();
 
-  void getRepeatTypeAndDuration() {
+  void getRepeatTypeAndInterval() {
     if (rulePartMap.containsKey("INTERVAL")) {
       logger.d("INTERVAL FOUND");
       interval = rulePartMap["INTERVAL"];
