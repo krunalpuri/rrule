@@ -49,12 +49,17 @@ void main() {
   Logger.level = Level.debug;
 
   List<String> recurrence = [
-    "RRULE:FREQ=DAILY;UNTIL=20200523T035959Z;BYDAY=SU,MO,TU"
+    "RRULE:FREQ=DAILY;UNTIL=20200523T035959Z"
+//    "RRULE:FREQ=DAILY;UNTIL=20200523T035959Z;BYDAY=SU,MO,TU;BYMONTHDAY=-2,15"
   ];
   RRuleParse rRuleParse = RRuleParse.googleEvent(
       recurrence: recurrence, startTime: null, endTime: null);
   logger.d(rRuleParse.parseRule());
   logger.d(rRuleParse.freqStrategy.toString());
+  DateTime testDate =  DateTime(2020, 05, 22).toUtc();
+  logger.i(testDate);
+  logger.d(rRuleParse.freqStrategy
+      .checkStatusOnDate(testDate));
 }
 
 //  List<String> recurrence = ["RRULE:FREQ=DAILY"];

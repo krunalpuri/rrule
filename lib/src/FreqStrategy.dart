@@ -19,7 +19,8 @@ abstract class FreqStrategy {
       this.startTime,
       this.endTime,
       this.ruleType = FreqType.FREQ_UNSUPPORTED}) {
-    getRepeatTypeAndInterval();
+    getInterval();
+    getRepeatType();
   }
 
   List<DateTime> getDates(DateTime until);
@@ -28,15 +29,19 @@ abstract class FreqStrategy {
 
   FreqType getRuleType();
 
-  void getRepeatTypeAndInterval() {
+  // get Rule parts
+  void getInterval() {
     if (rulePartMap.containsKey("INTERVAL")) {
       logger.d("INTERVAL FOUND");
       interval = rulePartMap["INTERVAL"];
     }
+  }
+
+  void getRepeatType() {
     if (rulePartMap.containsKey("COUNT")) {
       logger.d("COUNT FOUND");
       count = rulePartMap["COUNT"];
-      repeatType = RepeatType.UNTIL;
+      repeatType = RepeatType.COUNT;
     } else if (rulePartMap.containsKey("UNTIL")) {
       logger.d("UNTIL FOUND");
       until = DateTime.parse(rulePartMap["UNTIL"]);
@@ -44,8 +49,54 @@ abstract class FreqStrategy {
     }
   }
 
+  List<int> getByMonth() {
+    if (rulePartMap.containsKey("BYMONTH")) {
+      logger.d("BYMONTH FOUND");
+      List<String> monthsString = rulePartMap["BYMONTH"].split(",");
+      List<int> byMonth = monthsString.map(int.parse).toList();
+      return byMonth;
+    }
+    return null;
+  }
+
+  List<int> getByMonthDay() {
+    if (rulePartMap.containsKey("BYMONTHDAY")) {
+      logger.d("BYMONTHDAY FOUND");
+      List<String> monthDaysString = rulePartMap["BYMONTHDAY"].split(",");
+      List<int> byMonthDays = monthDaysString.map(int.parse).toList();
+      return byMonthDays;
+    }
+    return null;
+  }
+
+  List<int> getByDay() {
+    if (rulePartMap.containsKey("BYDAY")) {
+      logger.d("BYDAY FOUND");
+      List<String> weekdaysCode = rulePartMap["BYDAY"].split(",");
+      List<int> weekDays = weekdaysCode.map(convertWeekdaysToInt).toList();
+      return weekDays;
+    }
+    return null;
+  }
+
   @override
   String toString() {
     return 'FreqStrategy{rulePartMap: $rulePartMap, startTime: $startTime, endTime: $endTime, ruleType: $ruleType, interval: $interval, count: $count, until: $until, repeatType: $repeatType}';
+  }
+}
+
+int convertWeekdaysToInt(String weekday){
+  switch(weekday){
+    case "MO": return 1;
+    case "TU": return 2;
+    case "WE": return 3;
+    case "TH": return 4;
+    case "FR": return 5;
+    case "SA": return 6;
+    case "SU": return 7;
+    default: {
+      logger.d("weekday $weekday");
+      throw Exception("BYDAY: Weekday has incorrect value");
+    }
   }
 }
