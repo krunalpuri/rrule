@@ -10,7 +10,7 @@ class YearlyStrategy extends FreqStrategy {
             ruleType: FreqType.FREQ_YEARLY);
 
   @override
-  getDates(DateTime until) {
+  getEventDates({DateTime upUntil, DateTime fromTime}) {
     // TODO: implement getDates
     throw UnimplementedError();
   }

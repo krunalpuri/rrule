@@ -10,7 +10,7 @@ class WeeklyStrategy extends FreqStrategy {
             ruleType: FreqType.FREQ_WEEKLY);
 
   @override
-  getDates(DateTime until) {
+  getEventDates({DateTime upUntil, DateTime fromTime}) {
     // TODO: implement getDates
     throw UnimplementedError();
   }

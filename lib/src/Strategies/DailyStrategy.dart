@@ -18,12 +18,6 @@ class DailyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay {
   }
 
   @override
-  getDates(DateTime until) {
-    // TODO: implement getDates
-    throw UnimplementedError();
-  }
-
-  @override
   bool checkStatusOnDate(DateTime inputDate) {
     if (inputDate.difference(startTime).isNegative) {
       logger.i("inputDate is before the startTime");
@@ -47,6 +41,55 @@ class DailyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay {
     return true;
   }
 
+  @override
+  List<DateTime> getEventDates({DateTime upUntil, DateTime fromTime}) {
+    if(fromTime == null || fromTime.difference(startTime).isNegative) {
+      fromTime = startTime; // optional from
+    }
+    List<DateTime> dates = [];
+    // check if the upUntil date is before from
+    if (upUntil.difference(fromTime).isNegative) {
+      logger.i("inputDate is before the startTime");
+      return dates;
+    }
+
+    upUntil = copyTimeOnly(from: fromTime, to: upUntil);
+    DateTime dateIterator = fromTime.toUtc();
+
+    if (repeatType.index == RepeatType.COUNT.index) {
+      int counter = 0;
+      while (dateIterator.difference(upUntil).isNegative && counter<count) {
+        if (dailyRulePartLogic(dateIterator)) {
+          dates.add(dateIterator);
+          counter++;
+        }
+        dateIterator = incrementLogic(dateIterator);
+      }
+    }
+    // forever and until repetition
+    else {
+      // if Event-Until is small than function's upUntil Date
+      if (until != null && until.difference(until).isNegative) {
+        upUntil = until;
+      }
+      while (dateIterator.difference(upUntil).isNegative) {
+        if (checkStatusOnDate(dateIterator)) {
+          dates.add(dateIterator);
+        }
+
+        dateIterator = incrementLogic(dateIterator);
+      }
+    }
+
+    return dates;
+  }
+
+  //TODO: Add a logic to increment interval based on other rule-part [later]
+  DateTime incrementLogic(DateTime dateTime){
+    return dateTime.add(Duration(days: interval));
+
+  }
+
   bool dailyRulePartLogic(inputDate) {
     if (checkByMonth(byMonth, inputDate) &&
         checkByMonthDay(byMonthDay, inputDate) &&
@@ -56,30 +99,24 @@ class DailyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay {
     return false;
   }
 
-  // TODO: More efficient logic
+  // TODO: More efficient logic [later]
   bool dailyCountLogic(inputDate) {
     // begin from the start date
     // keep on iterating and increment count
     // for each date that satisfies rulePart Logic
     int counter = 0;
     DateTime dateIterator = startTime.toUtc();
-    // match the time of startTime (for accuracy)
-    inputDate = inputDate.add(Duration(
-        hours: startTime.hour,
-        minutes: startTime.minute,
-        seconds: startTime.second,
-        microseconds: startTime.microsecond,
-        milliseconds: startTime.millisecond));
+    // match the Time of startTime
+    inputDate = copyTimeOnly(from: startTime, to: inputDate);
+
     logger.i(
         "start: ${startTime.toUtc()} , input: ${inputDate.toUtc()}, counts: $count ");
     // while dateIterator is at time smaller than inputDate
     while (dateIterator.difference(inputDate).isNegative) {
-      print(dateIterator.difference(inputDate).toString());
       if (dailyRulePartLogic(dateIterator)) {
         counter++;
       }
-      dateIterator =
-          dateIterator.add(Duration(days: interval)); // increase by interval
+      dateIterator = incrementLogic(dateIterator);// increase by interval
       if (counter > count) {
         logger
             .d("Input date exceeds the event count limit from the start date");

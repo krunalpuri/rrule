@@ -10,7 +10,7 @@ class UnsupportedStrategy extends FreqStrategy {
             ruleType: FreqType.FREQ_UNSUPPORTED);
 
   @override
-  getDates(DateTime until) {
+  getEventDates({DateTime upUntil, DateTime fromTime}) {
     // TODO: implement getDates
     throw UnimplementedError();
   }

@@ -23,7 +23,7 @@ abstract class FreqStrategy {
     getRepeatType();
   }
 
-  List<DateTime> getDates(DateTime until);
+  List<DateTime> getEventDates({DateTime upUntil, DateTime fromTime});
 
   bool checkStatusOnDate(DateTime dateTime);
 
@@ -82,6 +82,15 @@ abstract class FreqStrategy {
   @override
   String toString() {
     return 'FreqStrategy{rulePartMap: $rulePartMap, startTime: $startTime, endTime: $endTime, ruleType: $ruleType, interval: $interval, count: $count, until: $until, repeatType: $repeatType}';
+  }
+
+  DateTime copyTimeOnly({from,to}){
+    return to.add(Duration(
+        hours: from.hour,
+        minutes: from.minute,
+        seconds: from.second,
+        microseconds: from.microsecond,
+        milliseconds: from.millisecond));
   }
 
 }

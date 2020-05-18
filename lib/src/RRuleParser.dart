@@ -46,26 +46,32 @@ class RRuleParse {
 }
 
 void main() {
-  Logger.level = Level.debug;
+  Logger.level = Level.info;
 
-  DateTime start = DateTime.now().add(Duration(days: -100));
+  DateTime start = DateTime.now().add(Duration(days: -20));
   logger.i(start);
   List<String> recurrence = [
-//    "RRULE:FREQ=DAILY;UNTIL=20200523T035959Z"
-    "RRULE:FREQ=DAILY;COUNT=100"
-//    "RRULE:FREQ=DAILY;UNTIL=20200523T035959Z;BYDAY=SU,MO,TU;BYMONTHDAY=-2,15"
+    "RRULE:FREQ=DAILY;COUNT=100;BYDAY=FR,TU"
+//    "RRULE:FREQ=DAILY;UNTIL=20200523T035959Z;BYDAY=SU,MO,TU,SA"
   ];
   RRuleParse rRuleParse = RRuleParse.googleEvent(
       recurrence: recurrence, startTime: start, endTime: null);
+
   logger.d(rRuleParse.parseRule());
   logger.d(rRuleParse.freqStrategy.toString());
-  DateTime testDate =  DateTime(2020, 05, 18).toUtc();
-  logger.i(testDate);
-  logger.d(rRuleParse.freqStrategy
-      .checkStatusOnDate(testDate));
+
+  DateTime testStartDate = DateTime(2020, 05, 01).toUtc();
+  DateTime testDate = DateTime(2020, 05, 31).toUtc();
+  logger.i("testDate: $testDate");
+
+  logger.d(rRuleParse.freqStrategy.checkStatusOnDate(testDate));
+  rRuleParse.freqStrategy.getEventDates(fromTime: testStartDate, upUntil: testDate).forEach((element) {
+    print("${element.toUtc()}, ${element.weekday}");
+  });
 }
 
 //  List<String> recurrence = ["RRULE:FREQ=DAILY"];
 //  List<String> recurrence = ["RRULE:FREQ=DAILY;UNTIL=20200523T035959Z"];
 //  List<String> recurrence = ["RRULE:FREQ=WEEKLY;BYDAY=FR"];
 //  List<String> recurrence = ["RRULE:FREQ=YEARLY"];
+//    "RRULE:FREQ=DAILY;UNTIL=20200523T035959Z;BYDAY=SU,MO,TU;BYMONTHDAY=-2,15"
