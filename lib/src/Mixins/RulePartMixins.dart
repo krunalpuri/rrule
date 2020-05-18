@@ -6,7 +6,6 @@ mixin ByMonth {
   }
 }
 
-
 mixin ByMonthDay {
   checkByMonthDay(byMonthDay, inputDate) {
     if (byMonthDay != null) {
@@ -19,19 +18,17 @@ mixin ByMonthDay {
 
       // if neither values are in byMonthDay list, return false
       return (!(byMonthDay.contains(monthDay) ||
-          byMonthDay.contains(monthDayNegative))) ? false : true;
-    }
-    else {
+              byMonthDay.contains(monthDayNegative)))
+          ? false
+          : true;
+    } else {
       return true;
     }
   }
 }
-
 
 mixin ByDay {
   checkByDay(byDay, inputDate) {
     return (byDay != null && !byDay.contains(inputDate.weekday)) ? false : true;
   }
 }
-
-

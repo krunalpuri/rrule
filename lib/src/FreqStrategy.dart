@@ -93,6 +93,14 @@ abstract class FreqStrategy {
         milliseconds: from.millisecond));
   }
 
+  bool validInputDate(inputDate){
+    if (inputDate.difference(startTime).isNegative) {
+      logger.i("inputDate is before the startTime");
+      return false;
+    }
+    return true;
+  }
+
 }
 
 int convertWeekdaysToInt(String weekday){

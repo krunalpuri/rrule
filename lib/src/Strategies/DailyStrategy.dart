@@ -19,8 +19,7 @@ class DailyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay {
 
   @override
   bool checkStatusOnDate(DateTime inputDate) {
-    if (inputDate.difference(startTime).isNegative) {
-      logger.i("inputDate is before the startTime");
+    if (!validInputDate(inputDate)) {
       return false;
     }
 
@@ -32,7 +31,7 @@ class DailyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay {
     if (repeatType.index == RepeatType.UNTIL.index &&
         until.compareTo(inputDate) < 0) {
       logger.d("InputDate does not fall under the until interval");
-      logger.e(until.toString() + "\n" + inputDate.toString());
+      logger.d(until.toString() + "\n" + inputDate.toString());
       return false;
     } else if (repeatType.index == RepeatType.COUNT.index &&
         !dailyCountLogic(inputDate)) {
@@ -63,7 +62,7 @@ class DailyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay {
           dates.add(dateIterator);
           counter++;
         }
-        dateIterator = incrementLogic(dateIterator);
+        dateIterator = dailyIncrementLogic(dateIterator);
       }
     }
     // forever and until repetition
@@ -77,7 +76,7 @@ class DailyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay {
           dates.add(dateIterator);
         }
 
-        dateIterator = incrementLogic(dateIterator);
+        dateIterator = dailyIncrementLogic(dateIterator);
       }
     }
 
@@ -85,7 +84,7 @@ class DailyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay {
   }
 
   //TODO: Add a logic to increment interval based on other rule-part [later]
-  DateTime incrementLogic(DateTime dateTime){
+  DateTime dailyIncrementLogic(DateTime dateTime){
     return dateTime.add(Duration(days: interval));
 
   }
@@ -116,7 +115,7 @@ class DailyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay {
       if (dailyRulePartLogic(dateIterator)) {
         counter++;
       }
-      dateIterator = incrementLogic(dateIterator);// increase by interval
+      dateIterator = dailyIncrementLogic(dateIterator);// increase by interval
       if (counter > count) {
         logger
             .d("Input date exceeds the event count limit from the start date");
