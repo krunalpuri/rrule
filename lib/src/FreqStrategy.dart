@@ -40,7 +40,7 @@ abstract class FreqStrategy {
   void getRepeatType() {
     if (rulePartMap.containsKey("COUNT")) {
       logger.d("COUNT FOUND");
-      count = rulePartMap["COUNT"];
+      count = int.parse(rulePartMap["COUNT"]);
       repeatType = RepeatType.COUNT;
     } else if (rulePartMap.containsKey("UNTIL")) {
       logger.d("UNTIL FOUND");
@@ -83,6 +83,7 @@ abstract class FreqStrategy {
   String toString() {
     return 'FreqStrategy{rulePartMap: $rulePartMap, startTime: $startTime, endTime: $endTime, ruleType: $ruleType, interval: $interval, count: $count, until: $until, repeatType: $repeatType}';
   }
+
 }
 
 int convertWeekdaysToInt(String weekday){
@@ -100,3 +101,7 @@ int convertWeekdaysToInt(String weekday){
     }
   }
 }
+
+
+
+

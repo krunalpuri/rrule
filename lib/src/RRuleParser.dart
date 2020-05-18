@@ -48,15 +48,18 @@ class RRuleParse {
 void main() {
   Logger.level = Level.debug;
 
+  DateTime start = DateTime.now().add(Duration(days: -100));
+  logger.i(start);
   List<String> recurrence = [
-    "RRULE:FREQ=DAILY;UNTIL=20200523T035959Z"
+//    "RRULE:FREQ=DAILY;UNTIL=20200523T035959Z"
+    "RRULE:FREQ=DAILY;COUNT=100"
 //    "RRULE:FREQ=DAILY;UNTIL=20200523T035959Z;BYDAY=SU,MO,TU;BYMONTHDAY=-2,15"
   ];
   RRuleParse rRuleParse = RRuleParse.googleEvent(
-      recurrence: recurrence, startTime: null, endTime: null);
+      recurrence: recurrence, startTime: start, endTime: null);
   logger.d(rRuleParse.parseRule());
   logger.d(rRuleParse.freqStrategy.toString());
-  DateTime testDate =  DateTime(2020, 05, 22).toUtc();
+  DateTime testDate =  DateTime(2020, 05, 18).toUtc();
   logger.i(testDate);
   logger.d(rRuleParse.freqStrategy
       .checkStatusOnDate(testDate));
