@@ -17,9 +17,11 @@ class WeeklyStrategy extends FreqStrategy with ByMonth, ByDay {
   }
 
   @override
-  getEventDates({DateTime upUntil, DateTime fromTime}) {
-    // TODO: implement getDates
-    throw UnimplementedError();
+  getByDay() {
+    // if byDay is empty, use the day of the startDate
+    List<int> monthList = super.getByDay();
+    monthList?.sort();
+    return monthList ?? [startTime.weekday];
   }
 
   @override
@@ -48,6 +50,52 @@ class WeeklyStrategy extends FreqStrategy with ByMonth, ByDay {
   }
 
   @override
+  List<DateTime> getEventDates({DateTime upUntil, DateTime fromTime}) {
+    var start = fromTime;
+    if (start == null ||
+        !validInputDate(start) ||
+        repeatType.index == RepeatType.COUNT.index) {
+      start = startTime; // optional fromTime (Default: startTime)
+    }
+    List<DateTime> dates = [];
+    // check if the upUntil date is before start
+    if (upUntil.difference(start).isNegative) {
+      logger.i("upUntil is before the startTime");
+      return dates;
+    }
+
+    upUntil = copyTimeOnly(from: start, to: upUntil);
+    DateTime dateIterator = start.toUtc();
+
+    if (repeatType.index == RepeatType.COUNT.index) {
+      int counter = 0;
+      while (dateIterator.difference(upUntil).isNegative && counter < count) {
+        if (weeklyRulePartLogic(dateIterator)) {
+          if (start == dateIterator ||
+              start.difference(dateIterator).isNegative) {
+            dates.add(dateIterator);
+          }
+          counter++;
+        }
+        dateIterator = weeklyIncrementLogic(dateIterator);
+      }
+    } else {
+      // if Event-Until is smaller than passed argument upUntil Date
+      if (until != null && until.difference(until).isNegative) {
+        upUntil = until;
+      }
+      while (dateIterator.difference(upUntil).isNegative) {
+        if (checkStatusOnDate(dateIterator)) {
+          dates.add(dateIterator);
+        }
+        dateIterator = weeklyIncrementLogic(dateIterator);
+      }
+    }
+
+    return dates;
+  }
+
+  @override
   FreqType getRuleType() {
     return ruleType;
   }
@@ -66,18 +114,17 @@ class WeeklyStrategy extends FreqStrategy with ByMonth, ByDay {
     int counter = 0;
     DateTime dateIterator = startTime.toUtc();
     // match the Time of startTime
-    inputDate = copyTimeOnly(from: startTime, to: inputDate);
+    inputDate = copyTimeOnly(from: startTime.toUtc(), to: inputDate.toUtc());
 
     logger.i(
         "start: ${startTime.toUtc()} , input: ${inputDate.toUtc()}, counts: $count ");
     // while dateIterator is at time smaller than inputDate
-    logger.d("Date Logs");
     while (dateIterator.difference(inputDate).isNegative) {
       if (weeklyRulePartLogic(dateIterator)) {
         counter++;
       }
       dateIterator = weeklyIncrementLogic(dateIterator); // increase by interval
-      logger.e(dateIterator.toUtc());
+
       if (counter > count) {
         logger
             .d("Input date exceeds the event count limit from the start date");
@@ -92,10 +139,15 @@ class WeeklyStrategy extends FreqStrategy with ByMonth, ByDay {
   //TODO: Add a logic to increment interval based on other rule-part [later]
   DateTime weeklyIncrementLogic(DateTime dateTime) {
     if (byDay == null) {
-      return dateTime.add(Duration(days: 7*interval));
+      return dateTime.add(Duration(days: 7 * interval));
     } else {
-      // increment by 1 (it could be any day of the week)
-      return dateTime.add(Duration(days: 1));
+      // skip a interval * weeks and start from begin of the next week
+      var incrementDays = 1;
+      if (dateTime.weekday == byDay.last) {
+        // increment to first day of next week
+        incrementDays = (7 - dateTime.weekday) + (7 * (interval - 1));
+      }
+      return dateTime.add(Duration(days: incrementDays));
     }
   }
 }

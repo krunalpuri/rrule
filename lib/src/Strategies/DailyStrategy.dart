@@ -42,24 +42,30 @@ class DailyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay {
 
   @override
   List<DateTime> getEventDates({DateTime upUntil, DateTime fromTime}) {
-    if(fromTime == null || fromTime.difference(startTime).isNegative) {
-      fromTime = startTime; // optional from
+    var start = fromTime;
+    if (start == null ||
+        !validInputDate(start) ||
+        repeatType.index == RepeatType.COUNT.index) {
+      start = startTime; // optional fromTime (Default: startTime)
     }
     List<DateTime> dates = [];
-    // check if the upUntil date is before from
-    if (upUntil.difference(fromTime).isNegative) {
+    // check if the upUntil date is before start
+    if (upUntil.difference(start).isNegative) {
       logger.i("inputDate is before the startTime");
       return dates;
     }
 
-    upUntil = copyTimeOnly(from: fromTime, to: upUntil);
-    DateTime dateIterator = fromTime.toUtc();
+    upUntil = copyTimeOnly(from: start, to: upUntil);
+    DateTime dateIterator = start.toUtc();
 
     if (repeatType.index == RepeatType.COUNT.index) {
       int counter = 0;
-      while (dateIterator.difference(upUntil).isNegative && counter<count) {
+      while (dateIterator.difference(upUntil).isNegative && counter < count) {
         if (dailyRulePartLogic(dateIterator)) {
-          dates.add(dateIterator);
+          if (start == dateIterator ||
+              start.difference(dateIterator).isNegative) {
+            dates.add(dateIterator);
+          }
           counter++;
         }
         dateIterator = dailyIncrementLogic(dateIterator);
@@ -67,7 +73,7 @@ class DailyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay {
     }
     // forever and until repetition
     else {
-      // if Event-Until is small than function's upUntil Date
+      // if Event-Until is smaller than passed argument upUntil Date
       if (until != null && until.difference(until).isNegative) {
         upUntil = until;
       }
@@ -84,9 +90,8 @@ class DailyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay {
   }
 
   //TODO: Add a logic to increment interval based on other rule-part [later]
-  DateTime dailyIncrementLogic(DateTime dateTime){
+  DateTime dailyIncrementLogic(DateTime dateTime) {
     return dateTime.add(Duration(days: interval));
-
   }
 
   bool dailyRulePartLogic(inputDate) {
@@ -115,7 +120,7 @@ class DailyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay {
       if (dailyRulePartLogic(dateIterator)) {
         counter++;
       }
-      dateIterator = dailyIncrementLogic(dateIterator);// increase by interval
+      dateIterator = dailyIncrementLogic(dateIterator); // increase by interval
       if (counter > count) {
         logger
             .d("Input date exceeds the event count limit from the start date");

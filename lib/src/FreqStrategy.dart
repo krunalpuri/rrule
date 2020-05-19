@@ -13,6 +13,7 @@ abstract class FreqStrategy {
   int count;
   DateTime until;
   RepeatType repeatType = RepeatType.FOREVER;
+  int weekStart;
 
   FreqStrategy(
       {this.rulePartMap,
@@ -21,6 +22,7 @@ abstract class FreqStrategy {
       this.ruleType = FreqType.FREQ_UNSUPPORTED}) {
     getInterval();
     getRepeatType();
+    getWeekStart();
   }
 
   List<DateTime> getEventDates({DateTime upUntil, DateTime fromTime});
@@ -33,7 +35,7 @@ abstract class FreqStrategy {
   void getInterval() {
     if (rulePartMap.containsKey("INTERVAL")) {
       logger.d("INTERVAL FOUND");
-      interval = rulePartMap["INTERVAL"];
+      interval = int.parse(rulePartMap["INTERVAL"]);
     }
   }
 
@@ -79,12 +81,21 @@ abstract class FreqStrategy {
     return null;
   }
 
+  void getWeekStart() {
+    if (rulePartMap.containsKey("WKST")) {
+      logger.d("WKST FOUND");
+      weekStart = convertWeekdaysToInt(rulePartMap["WKST"]);
+    } else {
+      weekStart = convertWeekdaysToInt("MO");
+    }
+  }
+
   @override
   String toString() {
     return 'FreqStrategy{rulePartMap: $rulePartMap, startTime: $startTime, endTime: $endTime, ruleType: $ruleType, interval: $interval, count: $count, until: $until, repeatType: $repeatType}';
   }
 
-  DateTime copyTimeOnly({from,to}){
+  DateTime copyTimeOnly({from, to}) {
     return to.add(Duration(
         hours: from.hour,
         minutes: from.minute,
@@ -93,32 +104,35 @@ abstract class FreqStrategy {
         milliseconds: from.millisecond));
   }
 
-  bool validInputDate(inputDate){
+  bool validInputDate(inputDate) {
     if (inputDate.difference(startTime).isNegative) {
       logger.i("inputDate is before the startTime");
       return false;
     }
     return true;
   }
-
 }
 
-int convertWeekdaysToInt(String weekday){
-  switch(weekday){
-    case "MO": return 1;
-    case "TU": return 2;
-    case "WE": return 3;
-    case "TH": return 4;
-    case "FR": return 5;
-    case "SA": return 6;
-    case "SU": return 7;
-    default: {
-      logger.d("weekday $weekday");
-      throw Exception("BYDAY: Weekday has incorrect value");
-    }
+int convertWeekdaysToInt(String weekday) {
+  switch (weekday) {
+    case "MO":
+      return 1;
+    case "TU":
+      return 2;
+    case "WE":
+      return 3;
+    case "TH":
+      return 4;
+    case "FR":
+      return 5;
+    case "SA":
+      return 6;
+    case "SU":
+      return 7;
+    default:
+      {
+        logger.d("weekday $weekday");
+        throw Exception("BYDAY: Weekday has incorrect value");
+      }
   }
 }
-
-
-
-
