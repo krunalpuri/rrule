@@ -112,6 +112,14 @@ abstract class FreqStrategy {
     }
     return true;
   }
+
+  String onlyAlphabets(String input){
+    String output;
+    RegExp re = RegExp(r'[a-zA-Z]*$');
+    output = re.stringMatch(input);
+    logger.e(output);
+    return output;
+  }
 }
 
 

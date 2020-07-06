@@ -79,7 +79,7 @@ mixin ByDayExpand {
     }
     int prefix = int.parse(matches.first.group(0));
     String suffix = expandString.replaceAll(expandRegex, "");
-    logger.e(suffix);
+    logger.i(suffix);
     int expandDayCode = convertWeekdaysToInt(suffix);
     // TODO : Return expand day (to finish the monthly strategy checkStatusOnDate
     // get weekDay and MonthDay of first(last) Day of the inputDate
@@ -87,7 +87,7 @@ mixin ByDayExpand {
     if(prefix > 0){
       expandDay = findMonthFirstDay(prefix, expandDayCode, inputDate);
     } else{
-      expandDay = findMonthFirstDay(prefix, expandDayCode, inputDate);
+      expandDay = findMonthLastDay(prefix, expandDayCode, inputDate);
     }
 
     return expandDay;
@@ -106,7 +106,7 @@ mixin ByDayExpand {
     return day;
   }
 
-  int findMonthLastWeekDay(prefix, dayCode, DateTime inputDate){
+  int findMonthLastDay(prefix, dayCode, DateTime inputDate){
     int day;
     var tempDate = new DateTime(inputDate.year, inputDate.month + 1, 0);
     var lastDay = tempDate.day;

@@ -41,9 +41,8 @@ class MonthlyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay, ByDa
       //      Each BYDAY value can also be preceded by a positive (+n) or
       //      negative (-n) integer.  If present, this indicates the nth
       //      occurrence of a specific day within the MONTHLY or YEARLY "RRULE".
-
       List<String> weekdaysCode = rulePartMap["BYDAY"].split(",");
-
+      logger.d(weekdaysCode.toString());
       // For each getByDay value evaluate if it contains weekday or monthday value
       List<int> weekDays = weekdaysCode.map(monthlyByDayEvaluation).toList();
       return weekDays;
@@ -59,7 +58,7 @@ class MonthlyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay, ByDa
       // byDayExpand (which checks if the inputdate falls on a given day of it's month)
       // and then finally returns the weekday for ByDay rule
       byDayExpand.add(input);
-      return convertWeekdaysToInt(input.trim().substring(1,3));
+      return convertWeekdaysToInt(onlyAlphabets(input));
     }
     else{
       // normal weekday value  SU,MO,TU
