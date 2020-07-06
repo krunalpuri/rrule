@@ -61,10 +61,11 @@ void main() {
   Logger.level = Level.debug;
 
 //  DateTime start = DateTime.now().add(Duration(days: 1)).toUtc();
-  DateTime start = DateTime(1997, 9, 2).toUtc();
+  DateTime start = DateTime(1997, 8, 1).toUtc();
   logger.i("start: $start");
+  logger.i("start weekday: ${start.weekday}");
   List<String> recurrence = [
-  "RRULE:FREQ=DAILY;UNTIL=20000131T140000Z;BYMONTH=1"
+    "RRULE:FREQ=MONTHLY;COUNT=10;BYDAY=1MO"
 
   ];
   RRuleParse rRuleParse = RRuleParse.googleEvent(
@@ -73,18 +74,18 @@ void main() {
   logger.d(rRuleParse.parseRule());
   logger.d(rRuleParse.freqStrategy.toString());
 
-  DateTime testFromDate = DateTime(1997, 9, 2).toUtc();
+  DateTime testFromDate = DateTime(1997, 8, 4).toUtc();
   DateTime testUntilDate = DateTime(2002, 12, 31).toUtc();
   logger.i("testFromDate: $testFromDate, ${testFromDate.weekday}" +
       "\n" +
       "testUntilDate: $testUntilDate, ${testUntilDate.weekday}");
 
-  print(rRuleParse.checkEventStatusOn(testFromDate));
-  var result = rRuleParse.getEventDates(fromDate: testFromDate, toDate: testUntilDate);
-  result.forEach((element) {
-    print("${element.toUtc()}, ${element.weekday}");
-  });
-  print(result.length);
+  logger.e(rRuleParse.checkEventStatusOn(testFromDate));
+//  var result = rRuleParse.getEventDates(fromDate: testFromDate, toDate: testUntilDate);
+//  result.forEach((element) {
+//    print("${element.toUtc()}, ${element.weekday}");
+//  });
+//  print(result.length);
 
 }
 
@@ -99,10 +100,13 @@ void main() {
 
 
 // (##)WeeklyStrategy
-//  RRULE:FREQ=WEEKLY;UNTIL=19971224T000000Z
+//  "RRULE:FREQ=WEEKLY;UNTIL=19971224T000000Z"
 //  "RRULE:FREQ=WEEKLY;COUNT=10"
 //  "RRULE:FREQ=WEEKLY;UNTIL=20200523T035959Z"
 //  "RRULE:FREQ=WEEKLY;INTERVAL=2;WKST=SU"
 //  "RRULE:FREQ=WEEKLY;COUNT=10;WKST=SU;BYDAY=TU,TH"
 //  "RRULE:FREQ=WEEKLY;INTERVAL=2" //;BYDAY=SU,MO,WE"
 //  "RRULE:FREQ=WEEKLY;INTERVAL=2;COUNT=8;WKST=SU;BYDAY=TU,TH"
+
+// (##)MonthlyStrategy
+//  "RRULE:FREQ=MONTHLY;COUNT=10;BYDAY=1FR"

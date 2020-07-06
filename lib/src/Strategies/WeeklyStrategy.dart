@@ -16,8 +16,9 @@ class WeeklyStrategy extends FreqStrategy with ByMonth, ByDay {
     byDay = getByDay();
   }
 
+  // overrides getByDay() from FreqStrategy abstract class
   @override
-  getByDay() {
+  List<int> getByDay() {
     // if byDay is empty, use the day of the startDate
     List<int> monthList = super.getByDay();
     monthList?.sort();

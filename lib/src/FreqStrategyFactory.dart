@@ -8,7 +8,7 @@ class FreqStrategyFactory {
         return DailyStrategy(rulePartMap, startTime, endTime);
       case "WEEKLY":
         return WeeklyStrategy(rulePartMap, startTime, endTime);
-      case "MONTHY":
+      case "MONTHLY":
         return MonthlyStrategy(rulePartMap, startTime, endTime);
       case "YEARLY":
         return YearlyStrategy(rulePartMap, startTime, endTime);
