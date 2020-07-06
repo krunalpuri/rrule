@@ -1,4 +1,5 @@
 import 'package:rrule/src/ENUMS/FreqType.dart';
+import 'package:rrule/src/Enums/RepeatType.dart';
 import 'package:rrule/src/FreqStrategy.dart';
 import 'package:rrule/src/Helpers/WeekDays2Code.dart';
 import 'package:rrule/src/Mixins/RulePartMixins.dart';
@@ -66,10 +67,67 @@ class MonthlyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay, ByDa
     }
   }
 
+  // TODO: Change the logic [later]
   @override
   getEventDates({DateTime upUntil, DateTime fromTime}) {
-    // TODO: implement getDates
-    throw UnimplementedError();
+    var start = fromTime;
+    if (start == null ||
+        !validInputDate(start) ||
+        repeatType.index == RepeatType.COUNT.index) {
+      start = startTime; // optional fromTime (Default: startTime)
+    }
+    List<DateTime> dates = [];
+    // check if the upUntil date is before start
+    if (upUntil.difference(start).isNegative) {
+      logger.i("upUntil is before the startTime");
+      return dates;
+    }
+
+    upUntil = copyTimeOnly(from: start, to: upUntil);
+    DateTime dateIterator = start.toUtc();
+
+    if (repeatType.index == RepeatType.COUNT.index) {
+      int counter = 0;
+      while (dateIterator.difference(upUntil).isNegative && counter < count) {
+        if (monthlyRulePartLogic(dateIterator)) {
+          if (start == dateIterator ||
+              start.difference(dateIterator).isNegative) {
+            dates.add(dateIterator);
+          }
+          counter++;
+        }
+        dateIterator = monthlyIncrementLogic(dateIterator);
+      }
+    } else {
+      // if Event-Until is smaller than passed argument upUntil Date
+      if (until != null && until.difference(until).isNegative) {
+        upUntil = until;
+      }
+      while (dateIterator.difference(upUntil).isNegative) {
+        if (checkStatusOnDate(dateIterator)) {
+          dates.add(dateIterator);
+        }
+        dateIterator = monthlyIncrementLogic(dateIterator);
+      }
+    }
+    return dates;
+  }
+
+  DateTime monthlyIncrementLogic(DateTime dateTime) {
+    if (byDay == null) {
+      return new DateTime(dateTime.year, dateTime.month + (1* interval), dateTime.day);
+    } else {
+      // skip a interval * weeks and start from begin of the next week
+      var incrementDays;
+      if (dateTime.weekday == byDay.last) {
+        // increment to first day of next week
+        incrementDays = (7 - dateTime.weekday);
+      }
+      if(incrementDays == null || incrementDays <= 0){
+        incrementDays = 1;
+      }
+      return dateTime.add(Duration(days: incrementDays));
+    }
   }
 
   @override

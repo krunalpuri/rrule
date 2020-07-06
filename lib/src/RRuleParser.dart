@@ -65,7 +65,7 @@ void main() {
   logger.i("start: $start");
   logger.i("start weekday: ${start.weekday}");
   List<String> recurrence = [
-    "RRULE:FREQ=MONTHLY;INTERVAL=2;COUNT=100;BYDAY=2SU,-2SU"
+    "RRULE:FREQ=MONTHLY;INTERVAL=2;COUNT=4;BYDAY=5SU,-4TU"
 
   ];
   RRuleParse rRuleParse = RRuleParse.googleEvent(
@@ -74,18 +74,18 @@ void main() {
   logger.d(rRuleParse.parseRule());
   logger.d(rRuleParse.freqStrategy.toString());
 
-  DateTime testFromDate = DateTime(1998, 2, 21).toUtc();
+  DateTime testFromDate = DateTime(1997, 8, 21).toUtc();
   DateTime testUntilDate = DateTime(2002, 12, 31).toUtc();
   logger.i("testFromDate: $testFromDate, ${testFromDate.weekday}" +
       "\n" +
       "testUntilDate: $testUntilDate, ${testUntilDate.weekday}");
 
   logger.e(rRuleParse.checkEventStatusOn(testFromDate));
-//  var result = rRuleParse.getEventDates(fromDate: testFromDate, toDate: testUntilDate);
-//  result.forEach((element) {
-//    print("${element.toUtc()}, ${element.weekday}");
-//  });
-//  print(result.length);
+  var result = rRuleParse.getEventDates(fromDate: testFromDate, toDate: testUntilDate);
+  result.forEach((element) {
+    print("${element.toUtc()}, ${element.weekday}");
+  });
+  print(result.length);
 
 }
 

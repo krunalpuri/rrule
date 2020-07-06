@@ -78,7 +78,7 @@ mixin ByDayExpand {
     }
     int prefix = int.parse(matches.first.group(0));
     String suffix = expandString.replaceAll(expandRegex, "");
-    logger.i(suffix);
+//    logger.i(suffix);
     int expandDayCode = convertWeekdaysToInt(suffix);
     // Return expand day (to finish the monthly strategy checkStatusOnDate
     if(prefix > 0){
@@ -104,7 +104,7 @@ mixin ByDayExpand {
       day = 1 + (dayCode - firstWeekDay);
     }
 
-    // Check if prefix is valid
+    // Check if prefix specified date is valid
     var checkDay = day + (7 * (prefix - 1));
     if( checkDay  < endDate.day){
       return checkDay;
@@ -119,17 +119,22 @@ mixin ByDayExpand {
     var endDate = new DateTime(inputDate.year, inputDate.month + 1, 0);
     var lastDay = endDate.day;
     var lastWeekDay = endDate.weekday;
-    logger.i(lastWeekDay);
+//    logger.i(lastWeekDay);
 
     if(lastWeekDay > dayCode){
       day = lastDay - (lastWeekDay - dayCode);
     }else{
-      day = lastDay - ( 7 - (dayCode - lastWeekDay));
+      if(dayCode == lastWeekDay){
+        day = lastDay;
+      }else {
+        day = lastDay - (7 - (dayCode - lastWeekDay));
+      }
+//      logger.i(lastDay.toString() + " " + dayCode.toString() + " " + lastWeekDay.toString());
     }
 
-    // Check if prefix is valid
+    // Check if prefix specified date is valid
     var checkDay = day - (7 * (prefix.abs() - 1));
-    logger.i( "CheckDay:" + checkDay.toString() + " prefix: " + prefix.toString());
+//    logger.i( "CheckDay:" + checkDay.toString() + " prefix: " + prefix.toString());
     if(checkDay >= 1){
       return checkDay;
     }else{
