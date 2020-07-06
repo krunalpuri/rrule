@@ -115,9 +115,8 @@ class MonthlyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay, ByDa
 
   DateTime monthlyIncrementLogic(DateTime dateTime) {
     if (byDay == null) {
-      return new DateTime(dateTime.year, dateTime.month + (1* interval), dateTime.day);
+      return new DateTime(dateTime.year, dateTime.month + (1 * interval), dateTime.day);
     } else {
-      // skip a interval * weeks and start from begin of the next week
       var incrementDays;
       if (dateTime.weekday == byDay.last) {
         // increment to first day of next week
@@ -126,7 +125,13 @@ class MonthlyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay, ByDa
       if(incrementDays == null || incrementDays <= 0){
         incrementDays = 1;
       }
-      return dateTime.add(Duration(days: incrementDays));
+
+      DateTime nextDate = dateTime.add(Duration(days: incrementDays));
+      // skip months based on interval
+      if( nextDate.month != dateTime.month && interval > 1){
+        nextDate = new DateTime(dateTime.year, dateTime.month + interval, 1);
+      }
+      return nextDate;
     }
   }
 
@@ -151,12 +156,18 @@ class MonthlyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay, ByDa
 
   bool monthlyRulePartLogic(inputDate) {
     if (checkByMonth(byMonth, inputDate) &&
+        checkMonthlyInterval(interval, inputDate) &&
         checkByMonthDay(byMonthDay, inputDate) &&
         checkByDay(byDay, inputDate) &&
         checkByDayExpand(byDayExpand, inputDate)) {
       return true;
     }
     return false;
+  }
+
+  bool checkMonthlyInterval(int interval, DateTime inputDate){
+    int diffMonth = (inputDate.year - startTime.year) * 12 + (inputDate.month - startTime.month).abs();
+    return (diffMonth % interval != 0) ? false : true;
   }
 
 
