@@ -92,11 +92,6 @@ class MonthlyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay, ByDa
   }
 
   bool monthlyRulePartLogic(inputDate) {
-//    logger.i( "By Month" + checkByMonth(byMonth, inputDate).toString());
-//    logger.i("By MonthDay" + checkByMonthDay(byMonthDay, inputDate).toString());
-//    logger.i("By Day" + checkByDay(byDay, inputDate).toString());
-//    logger.i("By Day Expand" + checkByDayExpand(byDayExpand, inputDate).toString());
-
     if (checkByMonth(byMonth, inputDate) &&
         checkByMonthDay(byMonthDay, inputDate) &&
         checkByDay(byDay, inputDate) &&

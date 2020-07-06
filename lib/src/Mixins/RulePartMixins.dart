@@ -71,7 +71,6 @@ mixin ByDayExpand {
   int getExpandMonthDay(String expandString, DateTime inputDate) {
     int expandDay;
     Logger logger = Logger();
-    // TODO: The expand could be either +1, 1 or -1
     Iterable<Match> matches = expandRegex.allMatches(expandString);
     if(matches== null && matches.isEmpty){
       logger.d("getExpandDay: no matches found");
@@ -81,9 +80,7 @@ mixin ByDayExpand {
     String suffix = expandString.replaceAll(expandRegex, "");
     logger.i(suffix);
     int expandDayCode = convertWeekdaysToInt(suffix);
-    // TODO : Return expand day (to finish the monthly strategy checkStatusOnDate
-    // get weekDay and MonthDay of first(last) Day of the inputDate
-    // decrement till the required code is available
+    // Return expand day (to finish the monthly strategy checkStatusOnDate
     if(prefix > 0){
       expandDay = findMonthFirstDay(prefix, expandDayCode, inputDate);
     } else{
@@ -93,24 +90,35 @@ mixin ByDayExpand {
     return expandDay;
   }
 
-  int findMonthFirstDay(prefix, dayCode, DateTime inputDate){
+  // TODO: Prefix handles which week of the day (Ex: 2MO or 3MO)
+  // If the specified does not exist in the month, return 0
+  int findMonthFirstDay( int prefix, dayCode, DateTime inputDate){
     int day;
-    var tempDate = new DateTime(inputDate.year, inputDate.month, 1);
-    var firstWeekDay = tempDate.weekday;
+    var beginDate = new DateTime(inputDate.year, inputDate.month, 1);
+    var endDate = new DateTime(inputDate.year, inputDate.month + 1, 0);
+    var firstWeekDay = beginDate.weekday;
 
     if(firstWeekDay > dayCode){
       day = 1 + (7 - (firstWeekDay - dayCode));
     }else{
       day = 1 + (dayCode - firstWeekDay);
     }
-    return day;
+
+    // Check if prefix is valid
+    var checkDay = day + (7 * (prefix - 1));
+    if( checkDay  < endDate.day){
+      return checkDay;
+    }else{
+      return 0;
+    }
+
   }
 
-  int findMonthLastDay(prefix, dayCode, DateTime inputDate){
+  int findMonthLastDay(int prefix, dayCode, DateTime inputDate){
     int day;
-    var tempDate = new DateTime(inputDate.year, inputDate.month + 1, 0);
-    var lastDay = tempDate.day;
-    var lastWeekDay = tempDate.weekday;
+    var endDate = new DateTime(inputDate.year, inputDate.month + 1, 0);
+    var lastDay = endDate.day;
+    var lastWeekDay = endDate.weekday;
     logger.i(lastWeekDay);
 
     if(lastWeekDay > dayCode){
@@ -118,6 +126,14 @@ mixin ByDayExpand {
     }else{
       day = lastDay - ( 7 - (dayCode - lastWeekDay));
     }
-    return day;
+
+    // Check if prefix is valid
+    var checkDay = day - (7 * (prefix.abs() - 1));
+    logger.i( "CheckDay:" + checkDay.toString() + " prefix: " + prefix.toString());
+    if(checkDay >= 1){
+      return checkDay;
+    }else{
+      return 0;
+    }
   }
 }
