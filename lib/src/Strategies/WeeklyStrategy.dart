@@ -39,8 +39,7 @@ class WeeklyStrategy extends FreqStrategy with ByMonth, ByDay {
     // step2: Until/Count logic (With interval logic)
     if (repeatType.index == RepeatType.UNTIL.index &&
         until.compareTo(inputDate) < 0) {
-      logger.d("InputDate does not fall under the until interval");
-      logger.d(until.toString() + "\n" + inputDate.toString());
+      logger.d("InputDate does not fall under the until interval \n" + until.toString() + "\n" + inputDate.toString());
       return false;
     } else if (repeatType.index == RepeatType.COUNT.index &&
         !weeklyCountLogic(inputDate)) {
@@ -82,7 +81,7 @@ class WeeklyStrategy extends FreqStrategy with ByMonth, ByDay {
       }
     } else {
       // if Event-Until is smaller than passed argument upUntil Date
-      if (until != null && until.difference(until).isNegative) {
+      if (until != null && until.difference(upUntil).isNegative) {
         upUntil = until;
       }
       while (dateIterator.difference(upUntil).isNegative) {

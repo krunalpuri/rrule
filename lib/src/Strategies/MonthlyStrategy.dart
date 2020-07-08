@@ -100,7 +100,7 @@ class MonthlyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay, ByDa
       }
     } else {
       // if Event-Until is smaller than passed argument upUntil Date
-      if (until != null && until.difference(until).isNegative) {
+      if (until != null && until.difference(upUntil).isNegative) {
         upUntil = until;
       }
       while (dateIterator.difference(upUntil).isNegative) {

@@ -65,8 +65,7 @@ void main() {
   logger.i("start: $start");
   logger.i("start weekday: ${start.weekday}");
   List<String> recurrence = [
-    "RRULE:FREQ=MONTHLY;INTERVAL=2;COUNT=4;BYDAY=-4TU,4SU"
-
+    "RRULE:FREQ=YEARLY;BYDAY=9MO"
   ];
   RRuleParse rRuleParse = RRuleParse.googleEvent(
       recurrence: recurrence, startTime: start, endTime: null);
@@ -74,18 +73,18 @@ void main() {
   logger.d(rRuleParse.parseRule());
   logger.d(rRuleParse.freqStrategy.toString());
 
-  DateTime testFromDate = DateTime(1997, 10, 07).toUtc();
+  DateTime testFromDate = DateTime(2000, 2, 28).toUtc();
   DateTime testUntilDate = DateTime(2002, 12, 31).toUtc();
   logger.i("testFromDate: $testFromDate, ${testFromDate.weekday}" +
       "\n" +
       "testUntilDate: $testUntilDate, ${testUntilDate.weekday}");
 
   logger.e(rRuleParse.checkEventStatusOn(testFromDate));
-  var result = rRuleParse.getEventDates(fromDate: testFromDate, toDate: testUntilDate);
-  result.forEach((element) {
-    print("${element.toUtc()}, ${element.weekday}");
-  });
-  print(result.length);
+//  var result = rRuleParse.getEventDates(fromDate: testFromDate, toDate: testUntilDate);
+//  result.forEach((element) {
+//    print("${element.toUtc()}, ${element.weekday}");
+//  });
+//  print(result.length);
 
 }
 
@@ -108,5 +107,16 @@ void main() {
 //  "RRULE:FREQ=WEEKLY;INTERVAL=2" //;BYDAY=SU,MO,WE"
 //  "RRULE:FREQ=WEEKLY;INTERVAL=2;COUNT=8;WKST=SU;BYDAY=TU,TH"
 
+
 // (##)MonthlyStrategy
 //  "RRULE:FREQ=MONTHLY;COUNT=10;BYDAY=1FR"
+//  "RRULE:FREQ=MONTHLY;INTERVAL=2;COUNT=4;BYDAY=-4TU,4SU"
+
+// (##) YearlyStrategy
+// RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU;UNTIL=20061029T060000Z
+// RRULE:FREQ=YEARLY;BYMONTH=4;BYDAY=-1SU;UNTIL=19860427T070000Z
+// RRULE:FREQ=YEARLY;BYMONTH=4;BYDAY=1SU;UNTIL=20060402T070000Z
+//  RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU
+//  RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU
+//  RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU
+// RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU
