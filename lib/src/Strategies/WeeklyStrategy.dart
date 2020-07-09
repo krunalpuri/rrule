@@ -44,7 +44,10 @@ class WeeklyStrategy extends FreqStrategy with ByMonth, ByDay {
           "\n" +
           inputDate.toString());
       return false;
-    } else if (repeatType.index == RepeatType.COUNT.index &&
+    } else if(!checkIntervalLogic(inputDate)){
+      return false;
+    }
+    else if (repeatType.index == RepeatType.COUNT.index &&
         !weeklyCountLogic(inputDate)) {
       return false;
     }
@@ -144,7 +147,7 @@ class WeeklyStrategy extends FreqStrategy with ByMonth, ByDay {
     if (byDay == null) {
       return dateTime.add(Duration(days: 7 * interval));
     } else {
-      // skip a interval * weeks and start from begin of the next week
+      // skip an interval * weeks and start from begin of the next week
       var incrementDays = 1;
       if (dateTime.weekday == byDay.last) {
         // increment to first day of next week
@@ -153,4 +156,27 @@ class WeeklyStrategy extends FreqStrategy with ByMonth, ByDay {
       return dateTime.add(Duration(days: incrementDays));
     }
   }
+
+  bool checkIntervalLogic(DateTime inputDate) {
+    if(interval > 1) {
+      // get the weekday of inputDate as inputWeekDay and
+      // find the next weekday after startDate that matches inputWeekDay
+      int nextWeekDay ;
+      if( (startTime.weekday - inputDate.weekday) <= 0){
+          nextWeekDay =  (inputDate.weekday - startTime.weekday);
+      }
+      else{
+        nextWeekDay =  7 - (startTime.weekday - inputDate.weekday);
+      }
+
+      DateTime beginTime = startTime.add(Duration(days: nextWeekDay));
+      int difference = beginTime
+          .difference(inputDate)
+          .inDays;
+
+      return (difference % (7 * interval) == 0);
+    }
+    return true;
+  }
+
 }
