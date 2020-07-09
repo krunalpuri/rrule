@@ -2,7 +2,8 @@ name: rrule
 description: Dart Library to process RRULE field according to iCalendar RF5545 specification.
 version: 0.0.1
 author: Krunal <kpuri@bcmcgroup.com>
-homepage: https://www.bcmcgroup.com
+homepage: https://rrule.krunal.dev
+companypage: https"//www.bcmcgroup.com
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
@@ -10,12 +11,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
   logger: any
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
+  test: any
+  build_runner: any
+  build_test: any
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

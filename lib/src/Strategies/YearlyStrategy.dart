@@ -71,12 +71,11 @@ class YearlyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay, ByDay
 
   bool yearlyRulePartLogic(DateTime inputDate) {
 
-    logger.i("checkByMonth: " +checkByMonth(byMonth, inputDate).toString());
-    logger.i("checkByMonthDay: " +checkByMonthDay(byMonthDay, inputDate).toString());
-    logger.i("checkByDay: " +checkByDay(byDay, inputDate).toString());
-    logger.i("checkByDayExpand: " +checkByDayExpand(byDayExpand, inputDate).toString());
-    logger.i("checkYear: " +checkYear(inputDate).toString());
-    logger.i("checkByDayExpand: " +checkByDayExpand(byDayExpand, inputDate,strategy: "Yearly").toString());
+//    logger.i("checkByMonth: " +checkByMonth(byMonth, inputDate).toString());
+//    logger.i("checkByMonthDay: " +checkByMonthDay(byMonthDay, inputDate).toString());
+//    logger.i("checkByDay: " +checkByDay(byDay, inputDate).toString());
+//    logger.i("checkYear: " +checkYear(inputDate).toString());
+//    logger.i("checkByDayExpand: " +checkByDayExpand(byDayExpand, inputDate,strategy: "Yearly").toString());
 
 
     if (checkYear(inputDate) &&

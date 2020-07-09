@@ -33,6 +33,9 @@ class DailyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay {
       logger.d("InputDate does not fall under the until interval");
       logger.d(until.toString() + "\n" + inputDate.toString());
       return false;
+    } else if (!checkIntervalLogic(inputDate)) {
+      logger.d("InputDate - interval logic not satisfied");
+      return false;
     } else if (repeatType.index == RepeatType.COUNT.index &&
         !dailyCountLogic(inputDate)) {
       return false;
@@ -56,8 +59,9 @@ class DailyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay {
     }
 
     upUntil = copyTimeOnly(from: start, to: upUntil);
+    // TODO: FIX THIS: start should begin from the valid dates that fall under interval
     DateTime dateIterator = start.toUtc();
-
+    bool validDate = false;
     if (repeatType.index == RepeatType.COUNT.index) {
       int counter = 0;
       while (dateIterator.difference(upUntil).isNegative && counter < count) {
@@ -65,10 +69,13 @@ class DailyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay {
           if (start == dateIterator ||
               start.difference(dateIterator).isNegative) {
             dates.add(dateIterator);
+            validDate = true;
+          }else{
+            validDate = false;
           }
           counter++;
         }
-        dateIterator = dailyIncrementLogic(dateIterator);
+        dateIterator = dailyIncrementLogic(dateIterator,validDate);
       }
     }
     // forever and until repetition
@@ -80,9 +87,12 @@ class DailyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay {
       while (dateIterator.difference(upUntil).isNegative) {
         if (checkStatusOnDate(dateIterator)) {
           dates.add(dateIterator);
+          validDate = true;
+        }else{
+          validDate = false;
         }
 
-        dateIterator = dailyIncrementLogic(dateIterator);
+        dateIterator = dailyIncrementLogic(dateIterator,validDate);
       }
     }
 
@@ -90,8 +100,9 @@ class DailyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay {
   }
 
   //TODO: Add a logic to increment interval based on other rule-part [later]
-  DateTime dailyIncrementLogic(DateTime dateTime) {
-    return dateTime.add(Duration(days: interval));
+  DateTime dailyIncrementLogic(DateTime dateTime, bool validDate) {
+    int incrementBy = validDate ? interval : 1;
+    return dateTime.add(Duration(days: incrementBy));
   }
 
   bool dailyRulePartLogic(inputDate) {
@@ -116,11 +127,15 @@ class DailyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay {
     logger.i(
         "start: ${startTime.toUtc()} , input: ${inputDate.toUtc()}, counts: $count ");
     // while dateIterator is at time smaller than inputDate
+    bool validDate = false;
     while (dateIterator.difference(inputDate).isNegative) {
       if (dailyRulePartLogic(dateIterator)) {
         counter++;
+        validDate = true;
+      }else{
+        validDate = false;
       }
-      dateIterator = dailyIncrementLogic(dateIterator); // increase by interval
+      dateIterator = dailyIncrementLogic(dateIterator,validDate); // increase by interval
       if (counter > count) {
         logger
             .d("Input date exceeds the event count limit from the start date");
@@ -141,5 +156,11 @@ class DailyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay {
   String toString() {
     return super.toString() +
         '\nDailyStrategy{byMonth: $byMonth, byMonthDay: $byMonthDay, byDay: $byDay}';
+  }
+
+  // true if the inputDate satisfies the interval logic
+  bool checkIntervalLogic(DateTime inputDate) {
+    int difference = startTime.difference(inputDate).inDays;
+    return (difference % interval == 0);
   }
 }

@@ -71,7 +71,7 @@ mixin ByDayExpand {
     } else if (strategy == "Yearly") {
       int inputDay = inputDate.day;
       for (String expandString in byDayExpand) {
-        logger.e(expandString);
+//        logger.e(expandString);
         bool result = checkExpandYearDayMatchesInput(expandString, inputDate);
         if (result) {
           return true;
@@ -178,14 +178,14 @@ mixin ByDayExpand {
       // find the dayCount from the first day of year
       DateTime firstDayOfYear = new DateTime(inputDate.year, 1, 1).toUtc();
       int firstWeekDayOfYear = firstDayOfYear.weekday;
-      logger.e(firstDayOfYear.toString() + "\n" + firstWeekDayOfYear.toString());
+//      logger.e(firstDayOfYear.toString() + "\n" + firstWeekDayOfYear.toString());
       int daysCountExpandDate = 1;
       if(dayCode >= firstWeekDayOfYear) {
         daysCountExpandDate  +=
             (dayCode - firstWeekDayOfYear) +
             (7 * (prefixCount - 1));
       }else{
-        logger.d(firstWeekDayOfYear.toString() + "\n" + dayCode.toString());
+//        logger.d(firstWeekDayOfYear.toString() + "\n" + dayCode.toString());
         daysCountExpandDate +=
             (7 - (firstWeekDayOfYear - dayCode)%7) +
                 (7 * (prefixCount - 1));
@@ -193,8 +193,8 @@ mixin ByDayExpand {
 
       // find the dayCount of input from the first day of year
       int daysCountInputDate = inputDate.difference(firstDayOfYear).inDays + 1;
-      logger.e( prefixCount.toString() + dayCode.toString() + "\n" +"DaysCountExpandDate: " + daysCountExpandDate.toString() + " \n" +
-          "DaysCountInputDate: " + daysCountInputDate.toString());
+//      logger.e( prefixCount.toString() + dayCode.toString() + "\n" +"DaysCountExpandDate: " + daysCountExpandDate.toString() + " \n" +
+//          "DaysCountInputDate: " + daysCountInputDate.toString());
 
       return (daysCountExpandDate == daysCountInputDate);
     } else {
