@@ -1,7 +1,7 @@
 import 'package:logger/logger.dart';
-import 'package:rrule/src/ENUMS/RepeatType.dart';
+import 'package:rrule/src/Enums/RepeatType.dart';
 
-import 'ENUMS/FreqType.dart';
+import 'Enums/FreqType.dart';
 import 'Helpers/WeekDays2Code.dart';
 
 final logger = Logger();

@@ -1,4 +1,4 @@
-import 'package:rrule/src/ENUMS/FreqType.dart';
+import 'package:rrule/src/Enums/FreqType.dart';
 import 'package:rrule/src/Enums/RepeatType.dart';
 import 'package:rrule/src/FreqStrategy.dart';
 import 'package:rrule/src/Helpers/WeekDays2Code.dart';

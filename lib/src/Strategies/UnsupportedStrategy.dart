@@ -1,4 +1,4 @@
-import 'package:rrule/src/ENUMS/FreqType.dart';
+import 'package:rrule/src/Enums/FreqType.dart';
 import 'package:rrule/src/FreqStrategy.dart';
 
 class UnsupportedStrategy extends FreqStrategy {

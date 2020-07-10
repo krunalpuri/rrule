@@ -3,7 +3,7 @@ import 'package:logger/logger.dart';
 import 'package:rrule/src/FreqStrategy.dart';
 import 'package:rrule/src/FreqStrategyFactory.dart';
 import 'package:rrule/src/Strategies/Strategies.dart';
-import 'ENUMS/FreqType.dart';
+import 'Enums/FreqType.dart';
 
 final logger = Logger();
 
