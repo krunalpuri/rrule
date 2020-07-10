@@ -120,7 +120,7 @@ class DailyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay {
     // keep on iterating and increment count
     // for each date that satisfies rulePart Logic
     int counter = 0;
-    DateTime dateIterator = startTime.toUtc();
+    DateTime dateIterator = startTime;
     // match the Time of startTime
     inputDate = copyTimeOnly(from: startTime, to: inputDate);
 
@@ -128,7 +128,8 @@ class DailyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay {
         "start: ${startTime.toUtc()} , input: ${inputDate.toUtc()}, counts: $count ");
     // while dateIterator is at time smaller than inputDate
     bool validDate = false;
-    while (dateIterator.difference(inputDate).isNegative) {
+
+    while (dateIterator.difference(inputDate.add(Duration(minutes: 1))).isNegative) {
       if (dailyRulePartLogic(dateIterator)) {
         counter++;
         validDate = true;

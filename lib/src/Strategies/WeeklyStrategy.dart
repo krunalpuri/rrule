@@ -52,7 +52,6 @@ class WeeklyStrategy extends FreqStrategy with ByMonth, ByDay {
       return false;
     }
     return true;
-    return true;
   }
 
   @override
@@ -125,7 +124,7 @@ class WeeklyStrategy extends FreqStrategy with ByMonth, ByDay {
     logger.i(
         "start: ${startTime.toUtc()} , input: ${inputDate.toUtc()}, counts: $count ");
     // while dateIterator is at time smaller than inputDate
-    while (dateIterator.difference(inputDate).isNegative) {
+    while (dateIterator.difference(inputDate.add(Duration(minutes: 1))).isNegative) {
       if (weeklyRulePartLogic(dateIterator)) {
         counter++;
       }

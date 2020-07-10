@@ -19,8 +19,7 @@ mixin ByMonthDay {
       // Setting date zero for next month gives last date of current month
       var monthEndDate = DateTime(inputDate.year, inputDate.month + 1, 0);
       // inputDay minus the monthEndDay
-      int monthDayNegative = monthDay - monthEndDate.day;
-
+      int monthDayNegative = monthDay - monthEndDate.day - 1 ;
       // if neither values are in byMonthDay list, return false
       return (!(byMonthDay.contains(monthDay) ||
               byMonthDay.contains(monthDayNegative)))
