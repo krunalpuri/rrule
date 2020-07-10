@@ -18,6 +18,7 @@ void main() {
     expect(rRuleParse.checkEventStatusOn(testFromDate),true);
 
     testFromDate = DateTime(1997, 8, 11).toUtc();
+    print(testFromDate.toString());
     expect(rRuleParse.checkEventStatusOn(testFromDate),false);
   });
 
@@ -137,6 +138,7 @@ void main() {
     expect(rRuleParse.checkEventStatusOn(testFromDate),true);
 
     testFromDate = DateTime(1997, 10, 10).toUtc();
+    print(testFromDate.toString());
     expect(rRuleParse.checkEventStatusOn(testFromDate),false);
 
     testToDate = DateTime(1998, 9, 30).toUtc();
@@ -202,6 +204,7 @@ void main() {
     expect(rRuleParse.checkEventStatusOn(testFromDate),true);
 
     testFromDate = DateTime(1997, 9, 9).toUtc();
+    print(testFromDate.toString());
     expect(rRuleParse.checkEventStatusOn(testFromDate),false);
 
     testToDate = DateTime(1998, 9, 30).toUtc();
