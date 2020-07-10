@@ -1,8 +1,6 @@
 import 'package:logger/logger.dart';
 import 'package:test/test.dart';
-
 import 'package:rrule/rrule.dart';
-import 'package:rrule/src/Enums/FreqType.dart';
 
 void main() {
 
