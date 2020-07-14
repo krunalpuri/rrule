@@ -175,10 +175,10 @@ mixin ByDayExpand {
   bool compareDates(int prefixCount, dayCode, DateTime inputDate) {
     if (prefixCount > 0) {
       // find the dayCount from the first day of year
-      DateTime firstDayOfYear = new DateTime(inputDate.year, 1, 1).toUtc();
+      DateTime firstDayOfYear = new DateTime.utc(inputDate.year, 1, 1);
       int firstWeekDayOfYear = firstDayOfYear.weekday;
 //      logger.e(firstDayOfYear.toString() + "\n" + firstWeekDayOfYear.toString());
-      int daysCountExpandDate = 0;
+      int daysCountExpandDate = 1;
       if(dayCode >= firstWeekDayOfYear) {
         daysCountExpandDate  +=
             (dayCode - firstWeekDayOfYear) +
@@ -189,16 +189,11 @@ mixin ByDayExpand {
             (7 - (firstWeekDayOfYear - dayCode)%7) +
                 (7 * (prefixCount - 1));
       }
-      // handle special case
-      if(daysCountExpandDate == 0){
-        daysCountExpandDate = 1;
-      }
 
       // find the dayCount of input from the first day of year
       int daysCountInputDate = inputDate.difference(firstDayOfYear).inDays + 1;
 //      logger.e( prefixCount.toString() + dayCode.toString() + "\n" +"DaysCountExpandDate: " + daysCountExpandDate.toString() + " \n" +
 //          "DaysCountInputDate: " + daysCountInputDate.toString());
-
       return (daysCountExpandDate == daysCountInputDate);
     } else {
       //TODO: When prefixCount is negative

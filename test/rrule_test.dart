@@ -4,6 +4,7 @@ import 'package:rrule/rrule.dart';
 
 void main() {
   Logger.level = Level.nothing;
+
   test('Daily Strategy Tests - Count', () {
     DateTime testFromDate, testUntilDate;
     DateTime start = DateTime.utc(1997, 8, 1);
@@ -596,7 +597,6 @@ void main() {
     expect(rRuleParse
         .parseRule()
         .index, FreqType.FREQ_YEARLY.index);
-
 
     testFromDate = DateTime.utc(1997, 5, 19);
     expect(rRuleParse.checkEventStatusOn(testFromDate), true);
