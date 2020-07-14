@@ -59,7 +59,6 @@ class DailyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay {
     }
 
     upUntil = copyTimeOnly(from: start, to: upUntil);
-    // TODO: FIX THIS: start should begin from the valid dates that fall under interval
     DateTime dateIterator = start.toUtc();
     bool validDate = false;
     if (repeatType.index == RepeatType.COUNT.index) {

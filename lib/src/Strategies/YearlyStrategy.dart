@@ -46,20 +46,82 @@ class YearlyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay, ByDay
 
   @override
   getEventDates({DateTime upUntil, DateTime fromTime}) {
-    // TODO: implement getDates
-    throw UnimplementedError();
+    var start = fromTime;
+    if (start == null ||
+        !validInputDate(start) ||
+        repeatType.index == RepeatType.COUNT.index) {
+      start = startTime; // optional fromTime (Default: startTime)
+    }
+    List<DateTime> dates = [];
+    // check if the upUntil date is before start
+    if (upUntil.difference(start).isNegative) {
+      logger.i("upUntil is before the startTime");
+      return dates;
+    }
+
+    upUntil = copyTimeOnly(from: start, to: upUntil);
+    DateTime dateIterator = start.toUtc();
+    bool validDate = false;
+    if (repeatType.index == RepeatType.COUNT.index) {
+      int counter = 0;
+      while (dateIterator.difference(upUntil).isNegative && counter < count) {
+        if (checkStatusOnDate(dateIterator)) {
+          if (start == dateIterator ||
+              start.difference(dateIterator).isNegative) {
+            dates.add(dateIterator);
+            validDate = true;
+          }else{
+            validDate = false;
+          }
+          counter++;
+        }
+        dateIterator = yearlyIncrementLogic(dateIterator,validDate);
+      }
+    } else {
+      // if Event-Until is smaller than passed argument upUntil Date
+      if (until != null && until.difference(upUntil).isNegative) {
+        upUntil = until;
+      }
+      while (dateIterator.difference(upUntil.add(Duration(minutes: 1))).isNegative) {
+        if (checkStatusOnDate(dateIterator)) {
+          dates.add(dateIterator);
+          validDate = true;
+        }else{
+          validDate = false;
+        }
+        dateIterator = yearlyIncrementLogic(dateIterator,validDate);
+      }
+    }
+    return dates;
   }
 
   @override
-  bool checkStatusOnDate(DateTime dateTime) {
-    if (!validInputDate(dateTime)) {
+  bool checkStatusOnDate(DateTime inputDate) {
+    if (!validInputDate(inputDate)) {
       return false;
     }
 
     // step1: RulePartLogic
-    if (!yearlyRulePartLogic(dateTime)) {
+    if (!yearlyRulePartLogic(inputDate)) {
       return false;
     }
+
+    // step2: Until/Count logic (With interval logic)
+    if (repeatType.index == RepeatType.UNTIL.index &&
+        until.compareTo(inputDate) < 0) {
+      logger.d("InputDate does not fall under the until interval \n" +
+          until.toString() +
+          "\n" +
+          inputDate.toString());
+      return false;
+    } else if(!checkIntervalLogic(inputDate)){
+      return false;
+    }
+    else if (repeatType.index == RepeatType.COUNT.index &&
+        !yearlyCountLogic(inputDate)) {
+      return false;
+    }
+    return true;
 
     return true;
   }
@@ -70,6 +132,11 @@ class YearlyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay, ByDay
   }
 
   bool yearlyRulePartLogic(DateTime inputDate) {
+//    print("checkByMonth: " +checkByMonth(byMonth, inputDate).toString());
+//    print("checkByMonthDay: " +checkByMonthDay(byMonthDay, inputDate).toString());
+//    print("checkByDay: " +checkByDay(byDay, inputDate).toString());
+//    print("checkYear: " +checkYear(inputDate).toString());
+//    print("checkByDayExpand: " +checkByDayExpand(byDayExpand, inputDate,strategy: "Yearly").toString());
 
 //    logger.i("checkByMonth: " +checkByMonth(byMonth, inputDate).toString());
 //    logger.i("checkByMonthDay: " +checkByMonthDay(byMonthDay, inputDate).toString());
@@ -78,8 +145,7 @@ class YearlyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay, ByDay
 //    logger.i("checkByDayExpand: " +checkByDayExpand(byDayExpand, inputDate,strategy: "Yearly").toString());
 
 
-    if (checkYear(inputDate) &&
-        checkByMonth(byMonth, inputDate) &&
+    if (checkByMonth(byMonth, inputDate) &&
         checkByYearDay(byYearDay, inputDate) &&
         checkByWeekNo(byWeekNo, inputDate) &&
         checkByMonthDay(byMonthDay, inputDate) &&
@@ -136,35 +202,56 @@ class YearlyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay, ByDay
     return true;
   }
 
-  bool checkYear(DateTime inputDate) {
-    // check if year falls under the interval
-    int diff = (inputDate.year - startTime.year);
-    if(diff < 0 || diff%interval != 0 ){
-      return false;
+  DateTime yearlyIncrementLogic(DateTime dateTime, bool validDate) {
+    var incrementDays = 1;
+    if (byDay != null && dateTime.weekday == byDay.last && ByMonthDay == null) {
+      // increment to first day of next week
+      incrementDays = (365 - dateTime.weekday);
     }
-    if(interval > 1 && diff%interval != 0 ){
-      return false;
+    if((incrementDays == null || incrementDays <= 0) || !validDate){
+      incrementDays = 1;
     }
 
-    // make sure the until/ count are satisfied
-    if (repeatType.index == RepeatType.COUNT.index) {
-      // TODO: LATER
-      // For each year, we have to find the count of valid dates, until the inputDate
-      return true;
-    }
-    else{
-      // check if until date of the event is before or after the inputDate
-      if(until != null) {
-        return (!until
-            .difference(inputDate)
-            .isNegative);
-      }
-      else{
-        return true;
-      }
-    }
+    DateTime nextDate = dateTime.add(Duration(days: incrementDays));
+    return nextDate;
   }
 
+  bool checkIntervalLogic(DateTime inputDate){
+    int diffYear = (inputDate.year - startTime.year);
+//    print( inputDate.toString() + " \n " + diffMonth.toString() );
+    return (diffYear % interval != 0) ? false : true;
+  }
 
+  bool yearlyCountLogic(DateTime inputDate) {
+    // begin from the start date
+    // keep on iterating and increment count
+    // for each date that satisfies rulePart Logic
+    int counter = 0;
+    DateTime dateIterator = startTime.toUtc();
+    // match the Time of startTime
+    inputDate = copyTimeOnly(from: startTime.toUtc(), to: inputDate.toUtc());
 
+    logger.i(
+        "start: ${startTime.toUtc()} , input: ${inputDate.toUtc()}, counts: $count ");
+    // while dateIterator is at time smaller than inputDate
+    bool validDate = false;
+    while (dateIterator.difference(inputDate.add(Duration(minutes: 1))).isNegative) {
+      if (yearlyRulePartLogic(dateIterator) && checkIntervalLogic(dateIterator)) {
+        counter++;
+        validDate = true;
+      }else{
+        validDate = false;
+      }
+      dateIterator = yearlyIncrementLogic(dateIterator,validDate); // increase by interval
+
+      if (counter > count) {
+        logger
+            .d("Input date exceeds the event count limit from the start date");
+        return false;
+      }
+    }
+    logger.i(" counter: $counter , totalCounts: $count");
+    logger.d("The counter is smaller than count, so the event is still valid ");
+    return true;
+  }
 }

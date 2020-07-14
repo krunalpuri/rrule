@@ -178,7 +178,7 @@ mixin ByDayExpand {
       DateTime firstDayOfYear = new DateTime(inputDate.year, 1, 1).toUtc();
       int firstWeekDayOfYear = firstDayOfYear.weekday;
 //      logger.e(firstDayOfYear.toString() + "\n" + firstWeekDayOfYear.toString());
-      int daysCountExpandDate = 1;
+      int daysCountExpandDate = 0;
       if(dayCode >= firstWeekDayOfYear) {
         daysCountExpandDate  +=
             (dayCode - firstWeekDayOfYear) +
