@@ -189,6 +189,10 @@ mixin ByDayExpand {
             (7 - (firstWeekDayOfYear - dayCode)%7) +
                 (7 * (prefixCount - 1));
       }
+      // handle special case
+      if(daysCountExpandDate == 0){
+        daysCountExpandDate = 1;
+      }
 
       // find the dayCount of input from the first day of year
       int daysCountInputDate = inputDate.difference(firstDayOfYear).inDays + 1;
