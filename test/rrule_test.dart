@@ -465,29 +465,29 @@ void main() {
         10);
   });
 
-  test('Yearly Strategy Tests', (){
-
-  });
-
-  test('Yearly Strategy Tests - COUNT', (){
-    DateTime testFromDate, testToDate;
-    DateTime start = DateTime.utc(1997, 9, 3);
-    List<String> recurrence = [
-      "RRULE:FREQ=YEARLY;COUNT=10"
-    ];
-    RRuleParse rRuleParse = RRuleParse.googleEvent(
-        recurrence: recurrence, startTime: start, endTime: null);
-    expect(rRuleParse.parseRule().index, FreqType.FREQ_YEARLY.index);
-
-    testFromDate = DateTime.utc(1997, 8, 1);
-    testToDate = DateTime.utc(2001, 7, 1);
-    expect(
-        rRuleParse
-            .getEventDates(fromDate: testFromDate, toDate: testToDate).length
-        ,
-        10);
-
-  });
+//  test('Yearly Strategy Tests', (){
+//
+//  });
+//
+//  test('Yearly Strategy Tests - COUNT', (){
+//    DateTime testFromDate, testToDate;
+//    DateTime start = DateTime.utc(1997, 9, 3);
+//    List<String> recurrence = [
+//      "RRULE:FREQ=YEARLY;COUNT=10"
+//    ];
+//    RRuleParse rRuleParse = RRuleParse.googleEvent(
+//        recurrence: recurrence, startTime: start, endTime: null);
+//    expect(rRuleParse.parseRule().index, FreqType.FREQ_YEARLY.index);
+//
+//    testFromDate = DateTime.utc(1997, 8, 1);
+//    testToDate = DateTime.utc(2001, 7, 1);
+//    expect(
+//        rRuleParse
+//            .getEventDates(fromDate: testFromDate, toDate: testToDate).length
+//        ,
+//        10);
+//
+//  });
 
 //
 //  test('Unsupported Strategy Tests', (){
