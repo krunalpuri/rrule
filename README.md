@@ -8,5 +8,12 @@ A dart library to process rrule field in google calendar, according to iCalendar
 ## Usage 
 TODO
 
+## PENDING TASKS
+1) Add BYSETPOS  
+2) Yearly Strategy: BYWEEKNO, BYYEARDAY  
+3)
+
+
+
 
 

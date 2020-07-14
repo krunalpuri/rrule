@@ -103,7 +103,7 @@ class MonthlyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay, ByDa
     if (repeatType.index == RepeatType.COUNT.index) {
       int counter = 0;
       while (dateIterator.difference(upUntil).isNegative && counter < count) {
-        if (monthlyRulePartLogic(dateIterator)) {
+        if (checkStatusOnDate(dateIterator)) {
           if (start == dateIterator ||
               start.difference(dateIterator).isNegative) {
             dates.add(dateIterator);
@@ -183,6 +183,7 @@ class MonthlyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay, ByDa
   }
 
   bool monthlyRulePartLogic(inputDate) {
+//    print(inputDate);
 //    print(checkByMonth(byMonth, inputDate));
 //    print(checkByMonthDay(byMonthDay, inputDate));
 //    print(checkByDay(byDay, inputDate));
@@ -198,7 +199,8 @@ class MonthlyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay, ByDa
   }
 
   bool checkIntervalLogic(DateTime inputDate){
-    int diffMonth = (inputDate.year - startTime.year) * 12 + (inputDate.month - startTime.month).abs();
+    int diffMonth = (inputDate.year - startTime.year) * 12 + (inputDate.month - startTime.month);
+//    print( inputDate.toString() + " \n " + diffMonth.toString() );
     return (diffMonth % interval != 0) ? false : true;
   }
 
@@ -216,7 +218,7 @@ class MonthlyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay, ByDa
     // while dateIterator is at time smaller than inputDate
     bool validDate = false;
     while (dateIterator.difference(inputDate.add(Duration(minutes: 1))).isNegative) {
-      if (monthlyRulePartLogic(dateIterator)) {
+      if (monthlyRulePartLogic(dateIterator) && checkIntervalLogic(dateIterator)) {
         counter++;
         validDate = true;
       }else{
