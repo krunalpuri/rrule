@@ -1,7 +1,9 @@
+import 'package:logger/logger.dart';
 import 'package:rrule/rrule.dart';
 import 'package:test/test.dart';
 
-unsupportedFreqTest(){
+void main(){
+  Logger.level = Level.nothing;
   test('Unsupported Strategy Tests - Secondly', () {
     DateTime start = DateTime.utc(1997, 8, 1);
     List<String> recurrence = ["RRULE:FREQ=SECONDLY;COUNT=10"];

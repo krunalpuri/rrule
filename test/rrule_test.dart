@@ -2,20 +2,21 @@ import 'package:logger/logger.dart';
 import 'package:test/test.dart';
 import 'package:rrule/rrule.dart';
 
-import 'daily_strategy_test.dart';
-import 'monthly_strategy_test.dart';
-import 'unsupported_strategy_test.dart';
-import 'weekly_strategy_test.dart';
-import 'yearly_strategy_test.dart';
+import 'daily_strategy_test.dart' as daily;
+import 'monthly_strategy_test.dart' as monthly;
+import 'unsupported_strategy_test.dart'as unsupported;
+import 'weekly_strategy_test.dart' as weekly;
+import 'yearly_strategy_test.dart' as yearly;
 
 void main() {
   Logger.level = Level.nothing;
 
-  dailyFreqTest();
-  weeklyFreqTest();
-  monthlyFreqTest();
-  yearlyFreqTest();
-  unsupportedFreqTest();
+  group('daily', daily.main);
+  group('weekly', weekly.main);
+  group('monthly', monthly.main);
+  group('yearly', yearly.main);
+  group('unsupported', unsupported.main);
+
 
 }
 

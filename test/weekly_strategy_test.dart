@@ -1,7 +1,9 @@
+import 'package:logger/logger.dart';
 import 'package:rrule/rrule.dart';
 import 'package:test/test.dart';
 
-weeklyFreqTest(){
+void main(){
+  Logger.level = Level.nothing;
   test('Weekly Strategy Tests - Count', () {
     DateTime testFromDate, testToDate;
     DateTime start = DateTime.utc(1997, 8, 1);
