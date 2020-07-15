@@ -37,6 +37,88 @@ mixin ByDay {
   }
 }
 
+mixin ByWeekNo{
+  checkByWeekNo(List<int> byWeekNo, inputDate, {int weekStart = 1}) {
+    //The BYWEEKNO rule part specifies a COMMA-separated list of
+    //      ordinals specifying weeks of the year.  Valid values are 1 to 53
+    //      or -53 to -1.  This corresponds to weeks according to week
+    //      numbering as defined in [ISO.8601.2004].  A week is defined as a
+    //      seven day period, starting on the day of the week defined to be
+    //      the week start (see WKST).  Week number one of the calendar year
+    //      is the first week that contains at least four (4) days in that
+    //      calendar year.  This rule part MUST NOT be used when the FREQ rule
+    //      part is set to anything other than YEARLY.  For example, 3
+    //      represents the third week of the year.
+
+    // TODO: For Negative values
+    return ((byWeekNo != null && byWeekNo.isNotEmpty) &&
+        !byWeekNo.contains(getYearlyWeekNo(inputDate, weekStart: weekStart))) ? false: true;
+  }
+
+  int getYearlyWeekNo(DateTime inputDate, {int weekStart = 1}){
+    // check if we need to skip the week
+    // if yes, then skip to the next weekStart
+    // from the weekStart find the next inputWeekDay
+    // if inputDate is less than above date return 0
+    // otherwise find the difference to the inputDate and return the weekNo.
+    int weekNo = 1;
+    DateTime firstDate = new DateTime.utc(inputDate.year,1,1);
+    int firstWeekDay = firstDate.weekday;
+    int inputWeekDay = inputDate.weekday;
+    int checkDiff = ((7 - (firstWeekDay - weekStart).abs()) % 7);
+    if(checkDiff < 4){
+//      print("Add date");
+      firstDate.add(Duration(days: checkDiff));
+    }else{
+      weekNo += 1;
+    }
+    firstWeekDay = firstDate.weekday;
+    if(inputDate.difference(firstDate).isNegative){
+      return 0;
+    }else{
+      weekNo += (inputDate.difference(firstDate).inDays / 7).floor() ;
+//      print(weekNo);
+      return weekNo;
+    }
+
+
+  }
+}
+
+mixin ByYearDay{
+  checkByYearDay(byYearDay, inputDate){
+    // The BYYEARDAY rule part specifies a COMMA-separated list of days
+    //      of the year.  Valid values are 1 to 366 or -366 to -1.  For
+    //      example, -1 represents the last day of the year (December 31st)
+    //      and -306 represents the 306th to the last day of the year (March
+    //      1st).  The BYYEARDAY rule part MUST NOT be specified when the FREQ
+    //      rule part is set to DAILY, WEEKLY, or MONTHLY.
+    return ((byYearDay != null && byYearDay.isNotEmpty) &&
+        !byYearDay.contains(getDifferenceFromFirstDay(inputDate)) &&
+            !byYearDay.contains(getDifferenceFromLastDay(inputDate)) ) ? false: true;
+
+  }
+
+  int getDifferenceFromFirstDay(DateTime inputDate){
+    DateTime firstDate = new DateTime.utc(inputDate.year,1,1);
+
+    if(inputDate.difference(firstDate).isNegative){
+      return 0;
+    }else{
+      return inputDate.difference(firstDate).inDays + 1;
+    }
+  }
+
+  int getDifferenceFromLastDay(DateTime inputDate){
+    DateTime lastDate = new DateTime.utc(inputDate.year+1,1,0);
+    if(lastDate.difference(inputDate).isNegative){
+      return 0;
+    }else{
+      return inputDate.difference(lastDate).inDays - 1;
+    }
+  }
+}
+
 mixin ByDayExpand {
   RegExp expandRegex = new RegExp(r"(?:[+|-]?\d+)");
 
@@ -201,3 +283,7 @@ mixin ByDayExpand {
     }
   }
 }
+
+  getYearlyWeekNo() {}
+
+

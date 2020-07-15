@@ -7,7 +7,8 @@ import 'package:rrule/src/Mixins/RulePartMixins.dart';
 // Yearly: ByDay is different than Monthly.
 // ByDay: 20MO means 20th Monday of the year
 
-class YearlyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay, ByDayExpand{
+class YearlyStrategy extends FreqStrategy
+    with ByMonth, ByMonthDay, ByDay, ByDayExpand, ByWeekNo, ByYearDay {
   List<int> byMonth, byMonthDay, byDay, byWeekNo, byYearDay;
   List<String> byDayExpand = []; // if byDay expands the range of dates
   YearlyStrategy(rulePartMap, startTime, endTime)
@@ -15,18 +16,20 @@ class YearlyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay, ByDay
             rulePartMap: rulePartMap,
             startTime: startTime,
             endTime: endTime,
-            ruleType: FreqType.FREQ_YEARLY){
+            ruleType: FreqType.FREQ_YEARLY) {
+    byYearDay = getByYearDay();
     byDay = getByDay();
     byMonth = getByMonth();
     byMonthDay = getByMonthDay();
-    // TODO: getByWeekNo and getByYearDay
+    byWeekNo = getByWeekNo();
+
   }
 
   @override
-  List<int> getByMonth(){
+  List<int> getByMonth() {
     List<int> byMonth = super.getByMonth();
     // if there is no byMonth, take the month of startTime
-    if((byMonth == null || byMonth.isEmpty) && byDay == null){
+    if ((byMonth == null || byMonth.isEmpty) && byDay == null && byYearDay == null) {
       byMonth = [];
       byMonth.add(startTime.month);
     }
@@ -37,7 +40,7 @@ class YearlyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay, ByDay
   List<int> getByMonthDay() {
     List<int> byMonthDay = super.getByMonthDay();
     // if there is no byMonth, take the month day of startTime
-    if((byMonthDay == null || byMonthDay.isEmpty) && byDay == null){
+    if ((byMonthDay == null || byMonthDay.isEmpty) && byDay == null && byYearDay == null) {
       byMonthDay = [];
       byMonthDay.add(startTime.day);
     }
@@ -70,26 +73,28 @@ class YearlyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay, ByDay
               start.difference(dateIterator).isNegative) {
             dates.add(dateIterator);
             validDate = true;
-          }else{
+          } else {
             validDate = false;
           }
           counter++;
         }
-        dateIterator = yearlyIncrementLogic(dateIterator,validDate);
+        dateIterator = yearlyIncrementLogic(dateIterator, validDate);
       }
     } else {
       // if Event-Until is smaller than passed argument upUntil Date
       if (until != null && until.difference(upUntil).isNegative) {
         upUntil = until;
       }
-      while (dateIterator.difference(upUntil.add(Duration(minutes: 1))).isNegative) {
+      while (dateIterator
+          .difference(upUntil.add(Duration(minutes: 1)))
+          .isNegative) {
         if (checkStatusOnDate(dateIterator)) {
           dates.add(dateIterator);
           validDate = true;
-        }else{
+        } else {
           validDate = false;
         }
-        dateIterator = yearlyIncrementLogic(dateIterator,validDate);
+        dateIterator = yearlyIncrementLogic(dateIterator, validDate);
       }
     }
     return dates;
@@ -114,10 +119,9 @@ class YearlyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay, ByDay
           "\n" +
           inputDate.toString());
       return false;
-    } else if(!checkIntervalLogic(inputDate)){
+    } else if (!checkIntervalLogic(inputDate)) {
       return false;
-    }
-    else if (repeatType.index == RepeatType.COUNT.index &&
+    } else if (repeatType.index == RepeatType.COUNT.index &&
         !yearlyCountLogic(inputDate)) {
       return false;
     }
@@ -135,7 +139,6 @@ class YearlyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay, ByDay
 //    print("checkByMonth: " +checkByMonth(byMonth, inputDate).toString());
 //    print("checkByMonthDay: " +checkByMonthDay(byMonthDay, inputDate).toString());
 //    print("checkByDay: " +checkByDay(byDay, inputDate).toString());
-//    print("checkYear: " +checkYear(inputDate).toString());
 //    print("checkByDayExpand: " +checkByDayExpand(byDayExpand, inputDate,strategy: "Yearly").toString());
 
 //    logger.i("checkByMonth: " +checkByMonth(byMonth, inputDate).toString());
@@ -144,14 +147,12 @@ class YearlyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay, ByDay
 //    logger.i("checkYear: " +checkYear(inputDate).toString());
 //    logger.i("checkByDayExpand: " +checkByDayExpand(byDayExpand, inputDate,strategy: "Yearly").toString());
 
-
     if (checkByMonth(byMonth, inputDate) &&
         checkByYearDay(byYearDay, inputDate) &&
         checkByWeekNo(byWeekNo, inputDate) &&
         checkByMonthDay(byMonthDay, inputDate) &&
         checkByDay(byDay, inputDate) &&
-        checkByDayExpand(byDayExpand, inputDate,strategy: "Yearly")
-    ) {
+        checkByDayExpand(byDayExpand, inputDate, strategy: "Yearly")) {
       return true;
     }
     return false;
@@ -177,7 +178,7 @@ class YearlyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay, ByDay
   }
 
   int yearlyByDayEvaluation(String input) {
-    if(input.length > 2){
+    if (input.length > 2) {
       // Ex +1MO or -1MO
       // this means its a month day value and expands the list of possible days
       // hence they it's added to the list of byDateExpand handled by custom rule called
@@ -185,30 +186,19 @@ class YearlyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay, ByDay
       // and then finally returns the weekday for ByDay rule
       byDayExpand.add(input);
       return convertWeekdaysToInt(onlyAlphabets(input));
-    }
-    else{
+    } else {
       // normal weekday value  SU,MO,TU
       return convertWeekdaysToInt(input);
     }
   }
 
-  bool checkByYearDay(List<int> byYearDay, DateTime inputDate) {
-    // TODO: LATER
-    return true;
-  }
-
-  bool checkByWeekNo(List<int> byWeekNo, DateTime inputDate) {
-    // TODO: LATER
-    return true;
-  }
-
   DateTime yearlyIncrementLogic(DateTime dateTime, bool validDate) {
     var incrementDays = 1;
-    if (byDay != null && dateTime.weekday == byDay.last && ByMonthDay == null) {
+    if (byDay != null && dateTime.weekday == byDay.last && ByMonthDay == null && ByYearDay == null) {
       // increment to first day of next week
       incrementDays = (365 - dateTime.weekday);
     }
-    if((incrementDays == null || incrementDays <= 0) || !validDate){
+    if ((incrementDays == null || incrementDays <= 0) || !validDate) {
       incrementDays = 1;
     }
 
@@ -216,7 +206,7 @@ class YearlyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay, ByDay
     return nextDate;
   }
 
-  bool checkIntervalLogic(DateTime inputDate){
+  bool checkIntervalLogic(DateTime inputDate) {
     int diffYear = (inputDate.year - startTime.year);
 //    print( inputDate.toString() + " \n " + diffMonth.toString() );
     return (diffYear % interval != 0) ? false : true;
@@ -235,14 +225,18 @@ class YearlyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay, ByDay
         "start: ${startTime.toUtc()} , input: ${inputDate.toUtc()}, counts: $count ");
     // while dateIterator is at time smaller than inputDate
     bool validDate = false;
-    while (dateIterator.difference(inputDate.add(Duration(minutes: 1))).isNegative) {
-      if (yearlyRulePartLogic(dateIterator) && checkIntervalLogic(dateIterator)) {
+    while (dateIterator
+        .difference(inputDate.add(Duration(minutes: 1)))
+        .isNegative) {
+      if (yearlyRulePartLogic(dateIterator) &&
+          checkIntervalLogic(dateIterator)) {
         counter++;
         validDate = true;
-      }else{
+      } else {
         validDate = false;
       }
-      dateIterator = yearlyIncrementLogic(dateIterator,validDate); // increase by interval
+      dateIterator =
+          yearlyIncrementLogic(dateIterator, validDate); // increase by interval
 
       if (counter > count) {
         logger
@@ -253,5 +247,26 @@ class YearlyStrategy extends FreqStrategy with ByMonth, ByMonthDay, ByDay, ByDay
     logger.i(" counter: $counter , totalCounts: $count");
     logger.d("The counter is smaller than count, so the event is still valid ");
     return true;
+  }
+
+  List<int> getByWeekNo() {
+    // bywknolist  = ( weeknum *("," weeknum) )
+    if (rulePartMap.containsKey("BYWEEKNO")) {
+      logger.d("BYWEEKNO FOUND");
+      List<String> weekNoString = rulePartMap["BYWEEKNO"].split(",");
+      List<int> byWeekNo = weekNoString.map(int.parse).toList();
+      return byWeekNo;
+    }
+    return null;
+  }
+
+  List<int> getByYearDay() {
+    if (rulePartMap.containsKey("BYYEARDAY")) {
+      logger.d("BYYEARDAY FOUND");
+      List<String> yearDayString = rulePartMap["BYYEARDAY"].split(",");
+      List<int> byYearDay = yearDayString.map(int.parse).toList();
+      return byYearDay;
+    }
+    return null;
   }
 }

@@ -6,7 +6,7 @@ void main() {
   Logger.level = Level.nothing;
 
   test('Daily Strategy Tests - Count', () {
-    DateTime testFromDate, testUntilDate;
+    DateTime testFromDate, testToDate;
     DateTime start = DateTime.utc(1997, 8, 1);
     List<String> recurrence = ["RRULE:FREQ=DAILY;COUNT=10"];
     RRuleParse rRuleParse = RRuleParse.googleEvent(
@@ -17,10 +17,16 @@ void main() {
 
     testFromDate = DateTime.utc(1997, 8, 11);
     expect(rRuleParse.checkEventStatusOn(testFromDate), false);
+
+    testToDate = DateTime.utc(1998, 8, 11);
+
+    rRuleParse.getEventDates(fromDate: testFromDate, toDate: testToDate).forEach((date) {
+      expect(rRuleParse.checkEventStatusOn(date), true);
+    });
   });
 
   test('Daily Strategy Tests - Until', () {
-    DateTime testFromDate, testUntilDate;
+    DateTime testFromDate, testToDate;
     DateTime start = DateTime.utc(1997, 8, 1);
     List<String> recurrence = ["RRULE:FREQ=DAILY;UNTIL=19971224T000000Z"];
     RRuleParse rRuleParse = RRuleParse.googleEvent(
@@ -31,6 +37,11 @@ void main() {
 
     testFromDate = DateTime.utc(1997, 12, 25);
     expect(rRuleParse.checkEventStatusOn(testFromDate), false);
+
+    testToDate = DateTime.utc(1998, 12, 25);
+    rRuleParse.getEventDates(fromDate: testFromDate, toDate: testToDate).forEach((date) {
+      expect(rRuleParse.checkEventStatusOn(date), true);
+    });
   });
 
   test('Daily Strategy Tests - Interval', () {
@@ -56,10 +67,16 @@ void main() {
             .getEventDates(fromDate: testFromDate, toDate: testToDate)
             .length,
         14);
+
+    testFromDate = DateTime.utc(1997, 8, 1);
+    testToDate = DateTime.utc(1997, 8, 30);
+    rRuleParse.getEventDates(fromDate: testFromDate, toDate: testToDate).forEach((date) {
+      expect(rRuleParse.checkEventStatusOn(date), true);
+    });
   });
 
   test('Daily Strategy Tests - BYMONTH', () {
-    DateTime testFromDate, testUntilDate;
+    DateTime testFromDate, testToDate;
     DateTime start = DateTime.utc(1997, 8, 1);
     List<String> recurrence = [
       "RRULE:FREQ=DAILY;UNTIL=20000131T140000Z;BYMONTH=8"
@@ -72,10 +89,16 @@ void main() {
 
     testFromDate = DateTime.utc(1998, 9, 1);
     expect(rRuleParse.checkEventStatusOn(testFromDate), false);
+
+    testFromDate = DateTime.utc(1997, 8, 1);
+    testToDate = DateTime.utc(1998, 8, 7);
+    rRuleParse.getEventDates(fromDate: testFromDate, toDate: testToDate).forEach((date) {
+      expect(rRuleParse.checkEventStatusOn(date), true);
+    });
   });
 
   test('Daily Strategy Tests - BYDAY', () {
-    DateTime testFromDate, testUntilDate;
+    DateTime testFromDate, testToDate;
     DateTime start = DateTime.utc(1997, 8, 1);
     List<String> recurrence = [
       "RRULE:FREQ=DAILY;UNTIL=20200523T035959Z;BYDAY=SU,MO,WE"
@@ -100,10 +123,16 @@ void main() {
     expect(rRuleParse.checkEventStatusOn(testFromDate), false);
     testFromDate = DateTime.utc(1998, 9, 19);
     expect(rRuleParse.checkEventStatusOn(testFromDate), false);
+
+    testFromDate = DateTime.utc(1998, 9, 12);
+    testToDate = DateTime.utc(1999, 9, 19);
+    rRuleParse.getEventDates(fromDate: testFromDate, toDate: testToDate).forEach((date) {
+      expect(rRuleParse.checkEventStatusOn(date), true);
+    });
   });
 
   test('Daily Strategy Tests - BYMONTHDAY', () {
-    DateTime testFromDate, testUntilDate;
+    DateTime testFromDate, testToDate;
     DateTime start = DateTime.utc(1997, 8, 1);
     List<String> recurrence = [
       "RRULE:FREQ=DAILY;UNTIL=20200523T035959Z;BYDAY=SU,MO,TU;BYMONTHDAY=-2,15"
@@ -117,6 +146,12 @@ void main() {
     expect(rRuleParse.checkEventStatusOn(testFromDate), true);
     testFromDate = DateTime.utc(1998, 8, 15);
     expect(rRuleParse.checkEventStatusOn(testFromDate), false);
+
+    testFromDate = DateTime.utc(1997, 8, 1);
+    testToDate = DateTime.utc(1998, 9, 30);
+    rRuleParse.getEventDates(fromDate: testFromDate, toDate: testToDate).forEach((date) {
+      expect(rRuleParse.checkEventStatusOn(date), true);
+    });
   });
 
   test('Weekly Strategy Tests', () {});
@@ -140,6 +175,10 @@ void main() {
             .getEventDates(fromDate: testFromDate, toDate: testToDate)
             .length,
         10);
+
+    rRuleParse.getEventDates(fromDate: testFromDate, toDate: testToDate).forEach((date) {
+      expect(rRuleParse.checkEventStatusOn(date), true);
+    });
   });
 
   test('Weekly Strategy Tests - Until', () {
@@ -154,6 +193,12 @@ void main() {
 
     testFromDate = DateTime.utc(1997, 12, 26);
     expect(rRuleParse.checkEventStatusOn(testFromDate), false);
+
+    testFromDate = DateTime.utc(1997, 12, 1);
+    testToDate = DateTime.utc(1998, 12, 1);
+    rRuleParse.getEventDates(fromDate: testFromDate, toDate: testToDate).forEach((date) {
+      expect(rRuleParse.checkEventStatusOn(date), true);
+    });
   });
 
   test('Weekly Strategy Tests - Interval', () {
@@ -183,6 +228,10 @@ void main() {
 
     testFromDate = DateTime.utc(1997, 8, 22);
     expect(rRuleParse.checkEventStatusOn(testFromDate), false);
+
+    rRuleParse.getEventDates(fromDate: testFromDate, toDate: testToDate).forEach((date) {
+      expect(rRuleParse.checkEventStatusOn(date), true);
+    });
   });
 
   test('Weekly Strategy Tests - BYDAY', () {
@@ -205,6 +254,10 @@ void main() {
             .getEventDates(fromDate: testFromDate, toDate: testToDate)
             .length,
         10);
+
+    rRuleParse.getEventDates(fromDate: testFromDate, toDate: testToDate).forEach((date) {
+      expect(rRuleParse.checkEventStatusOn(date), true);
+    });
   });
 
   test('Weekly Strategy Tests - Interval, BYDAY, COUNT', () {
@@ -234,6 +287,10 @@ void main() {
             .getEventDates(fromDate: testFromDate, toDate: testToDate)
             .length,
         8);
+
+    rRuleParse.getEventDates(fromDate: testFromDate, toDate: testToDate).forEach((date) {
+      expect(rRuleParse.checkEventStatusOn(date), true);
+    });
   });
 
   test('Monthly Strategy Tests', () {});
@@ -258,6 +315,10 @@ void main() {
             .getEventDates(fromDate: testFromDate, toDate: testToDate)
             .length,
         12);
+
+    rRuleParse.getEventDates(fromDate: testFromDate, toDate: testToDate).forEach((date) {
+      expect(rRuleParse.checkEventStatusOn(date), true);
+    });
   });
 
   test('MONTHLY Strategy Tests - Until', () {
@@ -282,6 +343,10 @@ void main() {
             .getEventDates(fromDate: testFromDate, toDate: testToDate)
             .length,
         5);
+
+    rRuleParse.getEventDates(fromDate: testFromDate, toDate: testToDate).forEach((date) {
+      expect(rRuleParse.checkEventStatusOn(date), true);
+    });
   });
 
   test('MONTHLY Strategy Tests - Interval', () {
@@ -302,6 +367,10 @@ void main() {
             .getEventDates(fromDate: testFromDate, toDate: testToDate)
             .length,
         6);
+
+    rRuleParse.getEventDates(fromDate: testFromDate, toDate: testToDate).forEach((date) {
+      expect(rRuleParse.checkEventStatusOn(date), true);
+    });
   });
 
   test('Monthly Strategy Tests - BYMONTH', () {
@@ -331,6 +400,10 @@ void main() {
             .getEventDates(fromDate: testFromDate, toDate: testToDate)
             .length,
         12);
+
+    rRuleParse.getEventDates(fromDate: testFromDate, toDate: testToDate).forEach((date) {
+      expect(rRuleParse.checkEventStatusOn(date), true);
+    });
   });
 
   test('Monthly Strategy Tests - BYDAY', () {
@@ -351,6 +424,10 @@ void main() {
             .getEventDates(fromDate: testFromDate, toDate: testToDate)
             .length,
         10);
+
+    rRuleParse.getEventDates(fromDate: testFromDate, toDate: testToDate).forEach((date) {
+      expect(rRuleParse.checkEventStatusOn(date), true);
+    });
   });
 
   test('Monthly Strategy Tests - Interval', () {
@@ -373,6 +450,10 @@ void main() {
             .getEventDates(fromDate: testFromDate, toDate: testToDate)
             .length,
         7);
+
+    rRuleParse.getEventDates(fromDate: testFromDate, toDate: testToDate).forEach((date) {
+      expect(rRuleParse.checkEventStatusOn(date), true);
+    });
   });
 
   test('Monthly Strategy Tests - Interval,COUNT, BYDAY', () {
@@ -407,6 +488,10 @@ void main() {
             .getEventDates(fromDate: testFromDate, toDate: testToDate).length
             ,
         6);
+
+    rRuleParse.getEventDates(fromDate: testFromDate, toDate: testToDate).forEach((date) {
+      expect(rRuleParse.checkEventStatusOn(date), true);
+    });
   });
 
   test('Monthly Strategy Tests - INTERVAL, COUNT, BYMONTHDAY', () {
@@ -436,6 +521,10 @@ void main() {
             .getEventDates(fromDate: testFromDate, toDate: testToDate).length
         ,
         10);
+
+    rRuleParse.getEventDates(fromDate: testFromDate, toDate: testToDate).forEach((date) {
+      expect(rRuleParse.checkEventStatusOn(date), true);
+    });
   });
 
   test('Monthly Strategy Tests - BYDAY, BYMONTHDAY', () {
@@ -464,6 +553,10 @@ void main() {
             .getEventDates(fromDate: testFromDate, toDate: testToDate).length
         ,
         10);
+
+    rRuleParse.getEventDates(fromDate: testFromDate, toDate: testToDate).forEach((date) {
+      expect(rRuleParse.checkEventStatusOn(date), true);
+    });
   });
 
   test('Yearly Strategy Tests', (){
@@ -496,6 +589,10 @@ void main() {
             .getEventDates(fromDate: testFromDate, toDate: testToDate).length
         ,
         10);
+
+    rRuleParse.getEventDates(fromDate: testFromDate, toDate: testToDate).forEach((date) {
+      expect(rRuleParse.checkEventStatusOn(date), true);
+    });
   });
 
   test('Yearly Strategy Tests - Until', ()
@@ -525,6 +622,10 @@ void main() {
             .getEventDates(fromDate: testFromDate, toDate: testToDate).length
         ,
         3);
+
+    rRuleParse.getEventDates(fromDate: testFromDate, toDate: testToDate).forEach((date) {
+      expect(rRuleParse.checkEventStatusOn(date), true);
+    });
   });
 
   test('Yearly Strategy Tests - Interval', ()
@@ -554,6 +655,10 @@ void main() {
             .getEventDates(fromDate: testFromDate, toDate: testToDate).length
         ,
         6);
+
+    rRuleParse.getEventDates(fromDate: testFromDate, toDate: testToDate).forEach((date) {
+      expect(rRuleParse.checkEventStatusOn(date), true);
+    });
   });
 
   test('Yearly Strategy Tests - BYMONTH', ()
@@ -583,6 +688,10 @@ void main() {
             .getEventDates(fromDate: testFromDate, toDate: testToDate).length
         ,
         11);
+
+    rRuleParse.getEventDates(fromDate: testFromDate, toDate: testToDate).forEach((date) {
+      expect(rRuleParse.checkEventStatusOn(date), true);
+    });
   });
 
   test('Yearly Strategy Tests - BYDAY', ()
@@ -612,6 +721,10 @@ void main() {
             .getEventDates(fromDate: testFromDate, toDate: testToDate).length
         ,
         10);
+
+    rRuleParse.getEventDates(fromDate: testFromDate, toDate: testToDate).forEach((date) {
+      expect(rRuleParse.checkEventStatusOn(date), true);
+    });
   });
 
 
@@ -646,6 +759,10 @@ void main() {
             .getEventDates(fromDate: testFromDate, toDate: testToDate).length
         ,
         9);
+
+    rRuleParse.getEventDates(fromDate: testFromDate, toDate: testToDate).forEach((date) {
+      expect(rRuleParse.checkEventStatusOn(date), true);
+    });
   });
 
 
@@ -688,6 +805,10 @@ void main() {
             .getEventDates(fromDate: testFromDate, toDate: testToDate).length
         ,
         11);
+
+    rRuleParse.getEventDates(fromDate: testFromDate, toDate: testToDate).forEach((date) {
+      expect(rRuleParse.checkEventStatusOn(date), true);
+    });
   });
 
   test('Yearly Strategy Tests - BYMONTH, BYDAY, BYMONTHDAY', ()
@@ -714,6 +835,10 @@ void main() {
             .getEventDates(fromDate: testFromDate, toDate: testToDate).length
         ,
         3);
+
+    rRuleParse.getEventDates(fromDate: testFromDate, toDate: testToDate).forEach((date) {
+      expect(rRuleParse.checkEventStatusOn(date), true);
+    });
   });
 
   test('Yearly Strategy Tests - BYMONTH, COUNT', ()
@@ -743,8 +868,82 @@ void main() {
             .getEventDates(fromDate: testFromDate, toDate: testToDate).length
         ,
         9);
+
+    rRuleParse.getEventDates(fromDate: testFromDate, toDate: testToDate).forEach((date) {
+      expect(rRuleParse.checkEventStatusOn(date), true);
+    });
   });
 
+  test('Yearly Strategy Tests - BYWEEKNO, BYDAY', ()
+  {
+    DateTime testFromDate, testToDate;
+    DateTime start = DateTime.utc(1997, 5, 12);
+    List<String> recurrence = [
+      "RRULE:FREQ=YEARLY;BYWEEKNO=20;BYDAY=MO"
+    ];
+    RRuleParse rRuleParse = RRuleParse.googleEvent(
+        recurrence: recurrence, startTime: start, endTime: null);
+    expect(rRuleParse
+        .parseRule()
+        .index, FreqType.FREQ_YEARLY.index);
+//
+    testFromDate = DateTime.utc(1997, 5, 12);
+    expect(rRuleParse.checkEventStatusOn(testFromDate), true);
+    testFromDate = DateTime.utc(1998, 5, 11);
+    expect(rRuleParse.checkEventStatusOn(testFromDate), true);
+    testFromDate = DateTime.utc(1999, 5, 17);
+    expect(rRuleParse.checkEventStatusOn(testFromDate), true);
+    testFromDate = DateTime.utc(1999, 5, 17);
+    expect(rRuleParse.checkEventStatusOn(testFromDate), true);
+    testFromDate = DateTime.utc(1996, 3, 1);
+    testToDate = DateTime.utc(2008, 1, 1);
+    expect(
+        rRuleParse
+            .getEventDates(fromDate: testFromDate, toDate: testToDate).length
+        ,
+        11);
+
+    rRuleParse.getEventDates(fromDate: testFromDate, toDate: testToDate).forEach((date) {
+      expect(rRuleParse.checkEventStatusOn(date), true);
+    });
+
+
+  });
+
+  test('Yearly Strategy Tests - BYYEARDAY', ()
+  {
+    DateTime testFromDate, testToDate;
+    DateTime start = DateTime.utc(1997, 1, 1);
+    List<String> recurrence = [
+      "RRULE:FREQ=YEARLY;INTERVAL=3;COUNT=10;BYYEARDAY=-2,1,100,200"
+    ];
+    RRuleParse rRuleParse = RRuleParse.googleEvent(
+        recurrence: recurrence, startTime: start, endTime: null);
+    expect(rRuleParse
+        .parseRule()
+        .index, FreqType.FREQ_YEARLY.index);
+
+    testFromDate = DateTime.utc(1997, 1, 1);
+    expect(rRuleParse.checkEventStatusOn(testFromDate), true);
+    testFromDate = DateTime.utc(1997, 4, 10);
+    expect(rRuleParse.checkEventStatusOn(testFromDate), true);
+    testFromDate = DateTime.utc(1997, 7, 19);
+    expect(rRuleParse.checkEventStatusOn(testFromDate), true);
+    testFromDate = DateTime.utc(1997, 12, 30);
+    expect(rRuleParse.checkEventStatusOn(testFromDate), true);
+
+    testFromDate = DateTime.utc(1996, 3, 1);
+    testToDate = DateTime.utc(2008, 1, 1);
+    expect(
+        rRuleParse
+            .getEventDates(fromDate: testFromDate, toDate: testToDate).length
+        ,
+        10);
+
+    rRuleParse.getEventDates(fromDate: testFromDate, toDate: testToDate).forEach((date) {
+      expect(rRuleParse.checkEventStatusOn(date), true);
+    });
+  });
 //
 //  test('Unsupported Strategy Tests', (){
 //
