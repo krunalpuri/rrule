@@ -10,8 +10,6 @@ TODO
 
 ## PENDING TASKS
 1) Add BYSETPOS  
-2) Yearly Strategy: BYWEEKNO, BYYEARDAY  
-3)
 
 
 
