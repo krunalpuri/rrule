@@ -5,7 +5,7 @@ dart:
   - stable
 
 dart_task:
-  - test: --platform vm
+  - test: --platform vm,android
 
 # Only building master means that we don't run two builds for each pull request.
 branches:
